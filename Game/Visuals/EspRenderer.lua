@@ -7,7 +7,7 @@ local BODY_PARTS = {
     "Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "HumanoidRootPart"
 }
 
-local BAR_GAP      = 25
+local BAR_GAP      = 3
 local SMOOTH_SPEED = 0.12
 
 local function NewLine(color, thickness)
@@ -196,7 +196,7 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     if showText then
         local text = math.floor(hp) .. "/" .. math.floor(maxHp)
         self.healthText.Text     = text
-        self.healthText.Position = Vector2.new(math.round(barX - BAR_GAP / 2), math.round(top))
+        self.healthText.Position = Vector2.new(math.round(barX - 2), math.round(top))
         self.healthText.Center   = true
         self.healthText.Color    = Color3.fromRGB(255, 255, 255)
         self.healthText.Visible  = true
