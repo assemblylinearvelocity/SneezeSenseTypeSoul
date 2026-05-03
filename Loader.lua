@@ -74,8 +74,10 @@ task.spawn(function()
         local MiscPage     = Window:Page({ Name = "Misc",     Columns = 2, Subtabs = false })
         local SettingsPage = Window:Page({ Name = "Settings", Columns = 2, Subtabs = false })
 
+        Visuals:Init(Library, EspRenderer)
+
         CombatTab.Init(CombatPage, AutoParry)
-        VisualsTab:Init(VisualsPage, Visuals)
+        VisualsTab.Init(VisualsPage, Visuals)
         MiscTab:Init(MiscPage, WorldModulation, Automation)
         SettingsTab.Init(SettingsPage, Library, KeybindList, Watermark)
 
