@@ -132,21 +132,42 @@ end
 
 function EspRenderer:UpdateBox(min, max, color)
     local o, i = 1, 1
-    ApplySet(self.box.outer,
-        Vector2.new(min.X - o, min.Y - o), Vector2.new(max.X + o, min.Y - o),
-        Vector2.new(min.X - o, max.Y + o), Vector2.new(max.X + o, max.Y + o)
-    )
-    ApplySet(self.box.main,
-        Vector2.new(min.X, min.Y), Vector2.new(max.X, min.Y),
-        Vector2.new(min.X, max.Y), Vector2.new(max.X, max.Y)
-    )
-    ApplySet(self.box.inner,
-        Vector2.new(min.X + i, min.Y + i), Vector2.new(max.X - i, min.Y + i),
-        Vector2.new(min.X + i, max.Y - i), Vector2.new(max.X - i, max.Y - i)
-    )
+
+    local oTL = Vector2.new(min.X - o, min.Y - o)
+    local oTR = Vector2.new(max.X + o, min.Y - o)
+    local oBL = Vector2.new(min.X - o, max.Y + o)
+    local oBR = Vector2.new(max.X + o, max.Y + o)
+
+    self.box.outer.Top.From    = oTL ; self.box.outer.Top.To    = Vector2.new(oTR.X + 1, oTR.Y)
+    self.box.outer.Bottom.From = oBL ; self.box.outer.Bottom.To = Vector2.new(oBR.X + 1, oBR.Y)
+    self.box.outer.Left.From   = oTL ; self.box.outer.Left.To   = Vector2.new(oBL.X, oBL.Y + 1)
+    self.box.outer.Right.From  = oTR ; self.box.outer.Right.To  = Vector2.new(oBR.X, oBR.Y + 1)
+    for _, l in pairs(self.box.outer) do l.Visible = true end
+
+    local mTL = Vector2.new(min.X, min.Y)
+    local mTR = Vector2.new(max.X, min.Y)
+    local mBL = Vector2.new(min.X, max.Y)
+    local mBR = Vector2.new(max.X, max.Y)
+
+    self.box.main.Top.From    = mTL ; self.box.main.Top.To    = Vector2.new(mTR.X + 1, mTR.Y)
+    self.box.main.Bottom.From = mBL ; self.box.main.Bottom.To = Vector2.new(mBR.X + 1, mBR.Y)
+    self.box.main.Left.From   = mTL ; self.box.main.Left.To   = Vector2.new(mBL.X, mBL.Y + 1)
+    self.box.main.Right.From  = mTR ; self.box.main.Right.To  = Vector2.new(mBR.X, mBR.Y + 1)
     for _, l in pairs(self.box.main) do
-        l.Color = color or Color3.fromRGB(255, 255, 255)
+        l.Color   = color or Color3.fromRGB(255, 255, 255)
+        l.Visible = true
     end
+
+    local iTL = Vector2.new(min.X + i, min.Y + i)
+    local iTR = Vector2.new(max.X - i, min.Y + i)
+    local iBL = Vector2.new(min.X + i, max.Y - i)
+    local iBR = Vector2.new(max.X - i, max.Y - i)
+
+    self.box.inner.Top.From    = iTL ; self.box.inner.Top.To    = Vector2.new(iTR.X + 1, iTR.Y)
+    self.box.inner.Bottom.From = iBL ; self.box.inner.Bottom.To = Vector2.new(iBR.X + 1, iBR.Y)
+    self.box.inner.Left.From   = iTL ; self.box.inner.Left.To   = Vector2.new(iBL.X, iBL.Y + 1)
+    self.box.inner.Right.From  = iTR ; self.box.inner.Right.To  = Vector2.new(iBR.X, iBR.Y + 1)
+    for _, l in pairs(self.box.inner) do l.Visible = true end
 end
 
 function EspRenderer:HideHealthBar()
@@ -165,8 +186,8 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self._smoothHp = self._smoothHp + (targetPct - self._smoothHp) * SMOOTH_SPEED
 
     local pct    = math.clamp(self._smoothHp, 0, 1)
-    local top    = math.round(min.Y)
-    local bottom = math.round(max.Y)
+    local top    = math.round(min.Y) - 1
+    local bottom = math.round(max.Y) + 1
     local height = bottom - top
     local barX   = math.round(min.X - BAR_GAP - 1)
     local fillY  = math.round(bottom - (height * pct))
