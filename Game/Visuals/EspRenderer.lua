@@ -118,6 +118,22 @@ function EspRenderer.new(player)
     nameText.Color   = Color3.fromRGB(255,255,255)
     self.nameText = nameText
 
+    local raceText = Drawing.new("Text")
+    raceText.Visible = false
+    raceText.Size    = 13
+    raceText.Center  = true
+    raceText.Outline = true
+    raceText.Color   = Color3.fromRGB(255,255,255)
+    self.raceText = raceText
+
+    local raceText = Drawing.new("Text")
+    raceText.Visible = false
+    raceText.Size    = 13
+    raceText.Center  = true
+    raceText.Outline = true
+    raceText.Color   = Color3.fromRGB(255, 255, 255)
+    self.raceText = raceText
+
     self._smoothHp = 1
     return self
 end
@@ -170,6 +186,50 @@ function EspRenderer:UpdateBox(min, max, color)
     self.box.inner.Right.From  = iTR
     self.box.inner.Right.To    = Vector2.new(iBR.X, iBR.Y+1)
     for _, l in pairs(self.box.inner) do l.Visible = true end
+end
+
+function EspRenderer:UpdateRace(min, max, character)
+    local race = character:GetAttribute("Race") or character:GetAttribute("Faction") or character:GetAttribute("Team") or "Unknown"
+    local centerY = math.round((min.Y + max.Y) / 2)
+    local fontSize = math.clamp(math.round((max.Y - min.Y) * 0.12), 11, 14)
+    self.raceText.Size     = fontSize
+    self.raceText.Text     = "[" .. race .. "]"
+    self.raceText.Position = Vector2.new(math.round(min.X - 5), centerY - math.round(fontSize / 2))
+    self.raceText.Center   = true
+    self.raceText.Visible  = true
+end
+
+function EspRenderer:HideRace()
+    self.raceText.Visible = false
+end
+
+function EspRenderer:UpdateRace(min, max, character)
+    local race = character:GetAttribute("Race")
+        or character:GetAttribute("Faction")
+        or character:GetAttribute("Team")
+
+    if not race or race == "" then
+        local values = character:FindFirstChild("Values_")
+        if values then
+            local raceVal = values:FindFirstChild("Race") or values:FindFirstChild("Faction")
+            if raceVal then race = raceVal.Value end
+        end
+    end
+
+    if not race or race == "" then
+        self.raceText.Visible = false
+        return
+    end
+
+    local centerX = math.round(min.X - 10)
+    local centerY = math.round((min.Y + max.Y) / 2)
+    self.raceText.Text     = "[" .. race .. "]"
+    self.raceText.Position = Vector2.new(centerX, centerY - 7)
+    self.raceText.Visible  = true
+end
+
+function EspRenderer:HideRace()
+    self.raceText.Visible = false
 end
 
 function EspRenderer:UpdateName(min, max, mode)
@@ -246,6 +306,7 @@ function EspRenderer:HideBox()
     end
     self:HideHealthBar()
     self:HideName()
+    self:HideRace()
 end
 
 function EspRenderer:Update(character, flags)
@@ -272,6 +333,16 @@ function EspRenderer:Update(character, flags)
             else
                 self:HideName()
             end
+            if flags["Race ESP"] then
+                self:UpdateRace(min, max, character)
+            else
+                self:HideRace()
+            end
+            if flags["Race ESP"] then
+                self:UpdateRace(min, max, character)
+            else
+                self:HideRace()
+            end
         else
             self:HideBox()
         end
@@ -291,6 +362,7 @@ function EspRenderer:Destroy()
     self.healthBar.fill:Remove()
     self.healthText:Remove()
     self.nameText:Remove()
+    self.raceText:Remove()
 end
 
 return EspRenderer

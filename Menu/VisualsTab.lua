@@ -66,6 +66,15 @@ function VisualsTab.Init(Page, Visuals)
     })
 
     NameModeDropdown:SetVisibility(false)
+
+    ESPSection:Toggle({
+        Name     = "Race",
+        Flag     = "Race ESP",
+        Default  = false,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
 end
 
 return VisualsTab
