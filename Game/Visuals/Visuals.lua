@@ -19,11 +19,6 @@ local function GetEntityCharacter(player)
     return entities:FindFirstChild(player.Name)
 end
 
-local function AnyFeatureOn()
-    local flags = GetFlags()
-    return flags["Box ESP"]
-end
-
 local function StartLoop()
     if _connection then return end
 
@@ -52,17 +47,10 @@ end
 function Visuals:Init(Library, EspRenderer)
     _Library = Library
     _EspRenderer = EspRenderer
+    StartLoop()
 end
 
 function Visuals:Update()
-    if AnyFeatureOn() then
-        StartLoop()
-    else
-        StopLoop()
-        for _, renderer in pairs(Renderers) do
-            renderer:HideBox()
-        end
-    end
 end
 
 function Visuals:Unload()
