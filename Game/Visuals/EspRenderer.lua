@@ -40,6 +40,9 @@ local function ApplySet(set, tl, tr, bl, br)
 end
 
 local function GetBoundingBox(character)
+    local root = character:FindFirstChild("HumanoidRootPart")
+    if not root then return nil, nil end
+
     local minX, minY = math.huge, math.huge
     local maxX, maxY = -math.huge, -math.huge
     local anyOnScreen = false
@@ -75,7 +78,9 @@ local function GetBoundingBox(character)
     end
 
     if not anyOnScreen then return nil, nil end
-    return Vector2.new(minX, minY), Vector2.new(maxX, maxY)
+
+    return Vector2.new(math.round(minX), math.round(minY)),
+           Vector2.new(math.round(maxX), math.round(maxY))
 end
 
 local function GetHealth(character)
@@ -161,11 +166,11 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self._smoothHp = self._smoothHp + (targetPct - self._smoothHp) * SMOOTH_SPEED
 
     local pct    = math.clamp(self._smoothHp, 0, 1)
-    local top    = min.Y
-    local bottom = max.Y
+    local top    = math.round(min.Y)
+    local bottom = math.round(max.Y)
     local height = bottom - top
-    local barX   = min.X - BAR_GAP - 1
-    local fillY  = bottom - (height * pct)
+    local barX   = math.round(min.X - BAR_GAP - 1)
+    local fillY  = math.round(bottom - (height * pct))
 
     self.healthBar.outlineLeft.From    = Vector2.new(barX - 1, top)
     self.healthBar.outlineLeft.To      = Vector2.new(barX - 1, bottom)
@@ -190,9 +195,9 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
 
     if showText then
         local text = math.floor(hp) .. "/" .. math.floor(maxHp)
-        local textWidth = #text * 6
+        local textWidth = #text * 5
         self.healthText.Text     = text
-        self.healthText.Position = Vector2.new(barX - 2 - textWidth, top)
+        self.healthText.Position = Vector2.new(math.round(barX - 2 - textWidth), math.round(top))
         self.healthText.Center   = false
         self.healthText.Color    = Color3.fromRGB(255, 255, 255)
         self.healthText.Visible  = true
