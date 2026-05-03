@@ -28,6 +28,9 @@ task.spawn(function()
     local Library = loadModule("GUI/Library.lua")
     if not Library then return warn("Failed to load Library") end
 
+    local EspRenderer = loadModule("Game/Visuals/EspRenderer.lua")
+    if not EspRenderer then return warn("Failed to load EspRenderer") end
+
     local Visuals = loadModule("Game/Visuals/Visuals.lua")
     if not Visuals then return warn("Failed to load Visuals") end
 
@@ -49,6 +52,9 @@ task.spawn(function()
     local MiscTab = loadModule("Menu/MiscTab.lua")
     if not MiscTab then return warn("Failed to load MiscTab") end
 
+    local SettingsTab = loadModule("Menu/SettingsTab.lua")
+    if not SettingsTab then return warn("Failed to load SettingsTab") end
+
     local SneezeSense = {}
 
     function SneezeSense.init()
@@ -63,13 +69,17 @@ task.spawn(function()
         local KeybindList = Library:KeybindList()
         KeybindList:SetVisibility(false)
 
-        local CombatPage  = Window:Page({ Name = "Combat",  Columns = 2, Subtabs = false })
-        local VisualsPage = Window:Page({ Name = "Visuals", Columns = 2, Subtabs = false })
-        local MiscPage    = Window:Page({ Name = "Misc",    Columns = 2, Subtabs = false })
+        local CombatPage   = Window:Page({ Name = "Combat",   Columns = 2, Subtabs = false })
+        local VisualsPage  = Window:Page({ Name = "Visuals",  Columns = 2, Subtabs = false })
+        local MiscPage     = Window:Page({ Name = "Misc",     Columns = 2, Subtabs = false })
+        local SettingsPage = Window:Page({ Name = "Settings", Columns = 2, Subtabs = false })
 
         CombatTab.Init(CombatPage, AutoParry)
         VisualsTab:Init(VisualsPage, Visuals)
         MiscTab:Init(MiscPage, WorldModulation, Automation)
+        SettingsTab.Init(SettingsPage, Library, KeybindList, Watermark)
+
+        Library.MenuKeybind = tostring(Enum.KeyCode.RightControl)
     end
 
     function SneezeSense.detach()
