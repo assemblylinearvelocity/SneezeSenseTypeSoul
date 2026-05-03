@@ -245,7 +245,7 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self.healthBar.outlineBottom.Visible = true
 
     self.healthBar.fill.From    = Vector2.new(barX, math.max(fillY, top))
-    self.healthBar.fill.To      = Vector2.new(barX, bottom)
+    self.healthBar.fill.To      = Vector2.new(barX, bottom + 1)
     self.healthBar.fill.Color   = HpToColor(pct)
     self.healthBar.fill.Visible = pct > 0
 
