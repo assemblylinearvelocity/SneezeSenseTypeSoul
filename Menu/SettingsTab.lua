@@ -157,7 +157,7 @@ function SettingsTab.Init(Page, Library, KeybindList, Watermark, DetachCallback)
         Name     = "BOOBS",
         Callback = function()
             pcall(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/0xCiel/scripts/refs/heads/main/boobwoken.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/assemblylinearvelocity/SneezeSenseTypeSoul/main/Game/Misc/boobwoken.lua"))()
             end)
         end
     })
