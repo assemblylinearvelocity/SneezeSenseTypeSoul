@@ -113,8 +113,8 @@ function EspRenderer.new(player)
     self.healthBar = {
         outlineLeft   = NewLine(Color3.fromRGB(0, 0, 0), 1),
         outlineRight  = NewLine(Color3.fromRGB(0, 0, 0), 1),
-        outlineTop    = NewLine(Color3.fromRGB(0, 0, 0), 3),
-        outlineBottom = NewLine(Color3.fromRGB(0, 0, 0), 3),
+        outlineTop    = NewLine(Color3.fromRGB(0, 0, 0), 1),
+        outlineBottom = NewLine(Color3.fromRGB(0, 0, 0), 1),
         fill          = NewLine(Color3.fromRGB(0, 255, 0), 1),
     }
 
@@ -224,20 +224,20 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     local barX   = math.round(min.X - BAR_GAP - 1)
     local fillY  = math.round(bottom - (height * pct))
 
-    self.healthBar.outlineLeft.From    = Vector2.new(barX - 1, top)
-    self.healthBar.outlineLeft.To      = Vector2.new(barX - 1, bottom)
+    self.healthBar.outlineLeft.From    = Vector2.new(barX - 1, top - 1)
+    self.healthBar.outlineLeft.To      = Vector2.new(barX - 1, bottom + 1)
     self.healthBar.outlineLeft.Visible = true
 
-    self.healthBar.outlineRight.From    = Vector2.new(barX + 1, top)
-    self.healthBar.outlineRight.To      = Vector2.new(barX + 1, bottom)
+    self.healthBar.outlineRight.From    = Vector2.new(barX + 1, top - 1)
+    self.healthBar.outlineRight.To      = Vector2.new(barX + 1, bottom + 1)
     self.healthBar.outlineRight.Visible = true
 
-    self.healthBar.outlineTop.From    = Vector2.new(barX - 2, top)
-    self.healthBar.outlineTop.To      = Vector2.new(barX + 2, top)
+    self.healthBar.outlineTop.From    = Vector2.new(barX - 1, top - 1)
+    self.healthBar.outlineTop.To      = Vector2.new(barX + 2, top - 1)
     self.healthBar.outlineTop.Visible = true
 
-    self.healthBar.outlineBottom.From    = Vector2.new(barX - 2, bottom)
-    self.healthBar.outlineBottom.To      = Vector2.new(barX + 2, bottom)
+    self.healthBar.outlineBottom.From    = Vector2.new(barX - 1, bottom + 1)
+    self.healthBar.outlineBottom.To      = Vector2.new(barX + 2, bottom + 1)
     self.healthBar.outlineBottom.Visible = true
 
     self.healthBar.fill.From    = Vector2.new(barX, fillY)
