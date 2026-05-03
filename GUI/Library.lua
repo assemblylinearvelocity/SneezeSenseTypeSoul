@@ -3455,6 +3455,8 @@ local Library do
     Library.Sections.Toggle = function(self, Data)
         Data = Data or { }
 
+        local IsSub = Data.Sub or Data.sub or false
+
         local Toggle = {
             Window = self.Window,
             Page = self.Page,
@@ -3471,6 +3473,11 @@ local Library do
             Count = 0
         }
 
+        local RowHeight   = IsSub and 9  or 11
+        local IndSize     = IsSub and 7  or 10
+        local TextSize    = IsSub and 10 or 12
+        local TextOffsetX = IsSub and 22 or 18
+
         local Items = { } do 
             Items["Toggle"] = Instances:Create("TextButton", {
                 Parent = Toggle.Section.Elements["Content"].Instance,
@@ -3481,7 +3488,7 @@ local Library do
                 AutoButtonColor = false,
                 BackgroundTransparency = 1,
                 Name = "\0",
-                Size = UDim2New(1, 0, 0, 11),
+                Size = UDim2New(1, 0, 0, RowHeight),
                 BorderSizePixel = 0,
                 TextSize = 14,
                 BackgroundColor3 = FromRGB(255, 255, 255)
@@ -3491,7 +3498,8 @@ local Library do
                 Parent = Items["Toggle"].Instance,
                 Name = "\0",
                 BorderColor3 = FromRGB(10, 10, 10),
-                Size = UDim2New(0, 10, 0, 10),
+                Size = UDim2New(0, IndSize, 0, IndSize),
+                Position = IsSub and UDim2New(0, 10, 0.5, -math.floor(IndSize/2)) or UDim2New(0, 0, 0.5, -math.floor(IndSize/2)),
                 BorderSizePixel = 2,
                 BackgroundColor3 = FromRGB(33, 33, 36)
             })  Items["Indicator"]:AddToTheme({BackgroundColor3 = "Element", BorderColor3 = "Border"})
@@ -3518,12 +3526,12 @@ local Library do
                 Text = Toggle.Name,
                 Name = "\0",
                 Size = UDim2New(1, 0, 1, 0),
-                Position = UDim2New(0, 18, 0, -1),
+                Position = UDim2New(0, TextOffsetX, 0, -1),
                 BackgroundTransparency = 1,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 BorderSizePixel = 0,
                 BorderColor3 = FromRGB(0, 0, 0),
-                TextSize = 12,
+                TextSize = TextSize,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })  Items["Text"]:AddToTheme({TextColor3 = "Text"})
             

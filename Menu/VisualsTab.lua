@@ -34,6 +34,7 @@ function VisualsTab.Init(Page, Visuals)
     HealthTextToggle = ESPSection:Toggle({
         Name     = "Health Text",
         Flag     = "Health Text",
+        Sub      = true,
         Default  = false,
         Callback = function(Value)
             Visuals:Update()
