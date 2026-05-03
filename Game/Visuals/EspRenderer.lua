@@ -192,9 +192,13 @@ function EspRenderer:UpdateName(min, max, mode)
         label = displayName .. " (@" .. userName .. ")"
     end
 
-    local centerX = math.round((min.X + max.X) / 2)
+    local boxHeight = max.Y - min.Y
+    local fontSize  = math.clamp(math.round(boxHeight * 0.12), 8, 14)
+    local centerX   = math.round((min.X + max.X) / 2)
+
+    self.nameText.Size     = fontSize
     self.nameText.Text     = label
-    self.nameText.Position = Vector2.new(centerX, math.round(min.Y - 26))
+    self.nameText.Position = Vector2.new(centerX, math.round(min.Y - fontSize - 2))
     self.nameText.Visible  = true
 end
 
