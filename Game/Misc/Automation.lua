@@ -41,7 +41,28 @@ local function GetFlyDirection()
     return dir.Magnitude > 0 and dir.Unit or Vector3.new(0,0,0)
 end
 
-local function StartFly(speed)
+local function StartSpeedhack(speed)
+    RunService:BindToRenderStep("SneezeSpeed", Enum.RenderPriority.Input.Value, function(dt)
+        local flags = _G.Flags or {}
+        if not flags["Speedhack"] then
+            RunService:UnbindFromRenderStep("SneezeSpeed")
+            return
+        end
+        local humanoid = GetHumanoid()
+        local hrp = GetHRP()
+        if humanoid and hrp and humanoid.Health > 0 then
+            local spd = flags["Speedhack Value"] or speed or 100
+            local dir = humanoid.MoveDirection
+            if dir.Magnitude > 0 then
+                hrp.CFrame = hrp.CFrame + dir * spd * dt
+            end
+        end
+    end)
+end
+
+local function StopSpeedhack()
+    RunService:UnbindFromRenderStep("SneezeSpeed")
+end
     RunService:BindToRenderStep("SneezeFly", Enum.RenderPriority.Input.Value, function(dt)
         local flags = _G.Flags or {}
         if not flags["Fly"] then
@@ -167,6 +188,7 @@ function Automation:Update()
     local flags = _G.Flags or {}
 
     if flags["Fly"] then StartFly() else StopFly() end
+    if flags["Speedhack"] then StartSpeedhack() else StopSpeedhack() end
     if flags["Noclip"] then if not _noclipConn then StartNoclip() end else StopNoclip() end
     if flags["Inf Jump"] then if not _infJumpConn then StartInfJump() end else StopInfJump() end
     if flags["No Fall"] then StartNoFall() else StopNoFall() end

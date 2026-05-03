@@ -1,22 +1,18 @@
 local VisualsTab = {}
 
 function VisualsTab.Init(Page, Visuals)
-    local ESPSection = Page:Section({ Name = "ESP", Side = 1 })
+    local ESPSection = Page:Section({ Name = "Player ESP", Side = 1 })
 
     ESPSection:Toggle({
         Name     = "Box ESP",
         Flag     = "Box ESP",
         Default  = false,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     }):Colorpicker({
         Name     = "Box Color",
         Flag     = "Box Color",
         Default  = Color3.fromRGB(255, 255, 255),
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 
     local HealthTextToggle
@@ -36,11 +32,8 @@ function VisualsTab.Init(Page, Visuals)
         Flag     = "Health Text",
         Sub      = true,
         Default  = false,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
-
     HealthTextToggle:SetVisiblity(false)
 
     local NameModeDropdown
@@ -60,67 +53,125 @@ function VisualsTab.Init(Page, Visuals)
         Flag     = "Name Mode",
         Default  = "Both",
         Items    = { "Both", "Display Name", "Username" },
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
-
     NameModeDropdown:SetVisibility(false)
 
     ESPSection:Toggle({
         Name     = "Race",
         Flag     = "Race ESP",
         Default  = false,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 
-    local MobSection = Page:Section({ Name = "Mob & NPC ESP", Side = 2 })
+    local MobSection = Page:Section({ Name = "Mob ESP", Side = 2 })
+
+    local MobBoxToggle
+    local MobNameToggle
+    local MobHealthToggle
+    local MobDistSlider
 
     MobSection:Toggle({
         Name     = "Mob ESP",
         Flag     = "Mob ESP",
         Default  = false,
         Callback = function(Value)
+            MobBoxToggle:SetVisiblity(Value)
+            MobNameToggle:SetVisiblity(Value)
+            MobHealthToggle:SetVisiblity(Value)
+            MobDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
     })
 
-    MobSection:Slider({
-        Name     = "Mob Distance",
+    MobBoxToggle = MobSection:Toggle({
+        Name     = "Box",
+        Flag     = "Mob Box",
+        Sub      = true,
+        Default  = true,
+        Callback = function() Visuals:Update() end
+    })
+
+    MobNameToggle = MobSection:Toggle({
+        Name     = "Name",
+        Flag     = "Mob Name",
+        Sub      = true,
+        Default  = true,
+        Callback = function() Visuals:Update() end
+    })
+
+    MobHealthToggle = MobSection:Toggle({
+        Name     = "Health",
+        Flag     = "Mob Health",
+        Sub      = true,
+        Default  = true,
+        Callback = function() Visuals:Update() end
+    })
+
+    MobDistSlider = MobSection:Slider({
+        Name     = "Distance",
         Flag     = "Mob ESP Distance",
         Min      = 50,
         Max      = 2000,
         Default  = 500,
         Decimals = 1,
         Compact  = true,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 
-    MobSection:Toggle({
+    MobBoxToggle:SetVisiblity(false)
+    MobNameToggle:SetVisiblity(false)
+    MobHealthToggle:SetVisiblity(false)
+    MobDistSlider:SetVisibility(false)
+
+    local NpcSection = Page:Section({ Name = "NPC ESP", Side = 2 })
+
+    local NpcBoxToggle
+    local NpcNameToggle
+    local NpcDistSlider
+
+    NpcSection:Toggle({
         Name     = "NPC ESP",
         Flag     = "NPC ESP",
         Default  = false,
         Callback = function(Value)
+            NpcBoxToggle:SetVisiblity(Value)
+            NpcNameToggle:SetVisiblity(Value)
+            NpcDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
     })
 
-    MobSection:Slider({
-        Name     = "NPC Distance",
+    NpcBoxToggle = NpcSection:Toggle({
+        Name     = "Box",
+        Flag     = "NPC Box",
+        Sub      = true,
+        Default  = true,
+        Callback = function() Visuals:Update() end
+    })
+
+    NpcNameToggle = NpcSection:Toggle({
+        Name     = "Name",
+        Flag     = "NPC Name",
+        Sub      = true,
+        Default  = true,
+        Callback = function() Visuals:Update() end
+    })
+
+    NpcDistSlider = NpcSection:Slider({
+        Name     = "Distance",
         Flag     = "NPC ESP Distance",
         Min      = 50,
         Max      = 2000,
         Default  = 500,
         Decimals = 1,
         Compact  = true,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
+
+    NpcBoxToggle:SetVisiblity(false)
+    NpcNameToggle:SetVisiblity(false)
+    NpcDistSlider:SetVisibility(false)
 
     local CameraSection = Page:Section({ Name = "Camera", Side = 2 })
 
@@ -128,9 +179,7 @@ function VisualsTab.Init(Page, Visuals)
         Name     = "FOV Changer",
         Flag     = "FOV Changer",
         Default  = false,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 
     CameraSection:Slider({
@@ -141,18 +190,14 @@ function VisualsTab.Init(Page, Visuals)
         Default  = 70,
         Decimals = 1,
         Compact  = true,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 
     CameraSection:Toggle({
         Name     = "Freecam",
         Flag     = "Freecam",
         Default  = false,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 
     CameraSection:Slider({
@@ -163,9 +208,7 @@ function VisualsTab.Init(Page, Visuals)
         Default  = 0.5,
         Decimals = 0.1,
         Compact  = true,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 
     CameraSection:Slider({
@@ -176,9 +219,7 @@ function VisualsTab.Init(Page, Visuals)
         Default  = 0.3,
         Decimals = 0.1,
         Compact  = true,
-        Callback = function(Value)
-            Visuals:Update()
-        end
+        Callback = function() Visuals:Update() end
     })
 end
 

@@ -11,31 +11,92 @@ local function GetFlags()
     return _Library and _Library.Flags or {}
 end
 
-local function NewText()
+local function NewText(size, color)
     local t = Drawing.new("Text")
     t.Visible = false
-    t.Size    = 13
+    t.Size    = size or 13
     t.Center  = true
     t.Outline = true
-    t.Color   = Color3.fromRGB(100, 220, 255)
+    t.Color   = color or Color3.fromRGB(100, 220, 255)
     return t
 end
 
+local function NewLine(color)
+    local l = Drawing.new("Line")
+    l.Visible   = false
+    l.Color     = color or Color3.fromRGB(100, 220, 255)
+    l.Thickness = 1
+    return l
+end
+
+local function NewBoxSet(color)
+    return {
+        Top    = NewLine(color),
+        Bottom = NewLine(color),
+        Left   = NewLine(color),
+        Right  = NewLine(color),
+    }
+end
+
+local function SetBoxVisible(box, visible)
+    for _, l in pairs(box) do l.Visible = visible end
+end
+
+local function DrawBox(box, min, max, color)
+    local tl = Vector2.new(min.X, min.Y)
+    local tr = Vector2.new(max.X, min.Y)
+    local bl = Vector2.new(min.X, max.Y)
+    local br = Vector2.new(max.X, max.Y)
+    box.Top.From    = tl ; box.Top.To    = Vector2.new(tr.X+1, tr.Y)
+    box.Bottom.From = bl ; box.Bottom.To = Vector2.new(br.X+1, br.Y)
+    box.Left.From   = tl ; box.Left.To   = Vector2.new(bl.X, bl.Y+1)
+    box.Right.From  = tr ; box.Right.To  = Vector2.new(br.X, br.Y+1)
+    for _, l in pairs(box) do
+        l.Color   = color or Color3.fromRGB(100, 220, 255)
+        l.Visible = true
+    end
+end
+
+local function GetBoundingBox(model)
+    local minX, minY = math.huge, math.huge
+    local maxX, maxY = -math.huge, -math.huge
+    local any = false
+    for _, part in ipairs(model:GetDescendants()) do
+        if part:IsA("BasePart") then
+            local screen, onScreen = Camera:WorldToViewportPoint(part.Position)
+            if onScreen then
+                any  = true
+                minX = math.min(minX, screen.X)
+                minY = math.min(minY, screen.Y)
+                maxX = math.max(maxX, screen.X)
+                maxY = math.max(maxY, screen.Y)
+            end
+        end
+    end
+    if not any then return nil, nil end
+    return Vector2.new(math.round(minX), math.round(minY)),
+           Vector2.new(math.round(maxX), math.round(maxY))
+end
+
 local function RemoveNpc(model)
-    local entry = _active[model]
-    if not entry then return end
-    if entry.renderName then RunService:UnbindFromRenderStep(entry.renderName) end
-    if entry.text then entry.text:Remove() end
-    if entry.ancestryConn then entry.ancestryConn:Disconnect() end
+    local e = _active[model]
+    if not e then return end
+    RunService:UnbindFromRenderStep(e.renderName)
+    if e.nameText then e.nameText:Remove() end
+    if e.box      then for _, l in pairs(e.box) do l:Remove() end end
+    if e.ancestryConn then e.ancestryConn:Disconnect() end
     _active[model] = nil
 end
 
 local function AddNpc(model)
     if _active[model] then return end
-    local primary = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChildWhichIsA("BasePart")
+    local primary = model.PrimaryPart
+        or model:FindFirstChild("HumanoidRootPart")
+        or model:FindFirstChildWhichIsA("BasePart")
     if not primary then return end
 
-    local text       = NewText()
+    local nameText   = NewText(13, Color3.fromRGB(100, 220, 255))
+    local box        = NewBoxSet(Color3.fromRGB(100, 220, 255))
     local renderName = "NpcESP_" .. model:GetDebugId()
 
     RunService:BindToRenderStep(renderName, Enum.RenderPriority.Camera.Value + 1, function()
@@ -46,29 +107,61 @@ local function AddNpc(model)
         end
 
         local localChar = Players.LocalPlayer.Character
-        if not localChar then text.Visible = false return end
-        local localHRP = localChar:FindFirstChild("HumanoidRootPart")
-        if not localHRP then text.Visible = false return end
+        local localHRP  = localChar and localChar:FindFirstChild("HumanoidRootPart")
+        if not localHRP then
+            nameText.Visible = false
+            SetBoxVisible(box, false)
+            return
+        end
 
         local dist    = (primary.Position - localHRP.Position).Magnitude
         local maxDist = flags["NPC ESP Distance"] or 500
 
-        if dist > maxDist then text.Visible = false return end
+        if dist > maxDist then
+            nameText.Visible = false
+            SetBoxVisible(box, false)
+            return
+        end
 
         local screenPos, onScreen = Camera:WorldToViewportPoint(primary.Position)
-        if not onScreen then text.Visible = false return end
+        if not onScreen then
+            nameText.Visible = false
+            SetBoxVisible(box, false)
+            return
+        end
 
-        text.Text     = string.format("[%s] [%.0fm]", model.Name, dist)
-        text.Position = Vector2.new(math.round(screenPos.X), math.round(screenPos.Y - 20))
-        text.Visible  = true
+        local sx = math.round(screenPos.X)
+        local sy = math.round(screenPos.Y)
+
+        if flags["NPC Box"] then
+            local min, max = GetBoundingBox(model)
+            if min and max then
+                DrawBox(box, min, max, Color3.fromRGB(100, 220, 255))
+            else
+                SetBoxVisible(box, false)
+            end
+        else
+            SetBoxVisible(box, false)
+        end
+
+        if flags["NPC Name"] then
+            nameText.Text     = string.format("[%s] [%.0fm]", model.Name, dist)
+            nameText.Position = Vector2.new(sx, sy - 20)
+            nameText.Visible  = true
+        else
+            nameText.Visible = false
+        end
     end)
 
     local ancestryConn = model.AncestryChanged:Connect(function(_, parent)
         if not parent then RemoveNpc(model) end
     end)
 
-    _active[model] = { text = text, renderName = renderName, ancestryConn = ancestryConn }
+    _active[model] = { nameText=nameText, box=box, renderName=renderName, ancestryConn=ancestryConn }
 end
+
+local _scanConn  = nil
+local _addedConn = nil
 
 local function ScanNpcs()
     local npcs = workspace:FindFirstChild("NPCs")
@@ -78,30 +171,22 @@ local function ScanNpcs()
     end
 end
 
-local _scanConn  = nil
-local _addedConn = nil
-
 function NpcRenderer:Init(Library)
     _Library = Library
 end
 
 function NpcRenderer:Enable()
     ScanNpcs()
-
     if not _scanConn then
         _scanConn = RunService.Heartbeat:Connect(function()
             if not GetFlags()["NPC ESP"] then NpcRenderer:Disable() end
         end)
     end
-
     if not _addedConn then
         local npcs = workspace:FindFirstChild("NPCs")
         if npcs then
             _addedConn = npcs.DescendantAdded:Connect(function(child)
-                if child:IsA("Model") then
-                    task.wait(0.1)
-                    AddNpc(child)
-                end
+                if child:IsA("Model") then task.wait(0.1) ; AddNpc(child) end
             end)
         end
     end
@@ -114,11 +199,7 @@ function NpcRenderer:Disable()
 end
 
 function NpcRenderer:Update()
-    if GetFlags()["NPC ESP"] then
-        NpcRenderer:Enable()
-    else
-        NpcRenderer:Disable()
-    end
+    if GetFlags()["NPC ESP"] then NpcRenderer:Enable() else NpcRenderer:Disable() end
 end
 
 function NpcRenderer:Unload()
