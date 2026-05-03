@@ -183,9 +183,10 @@ function EspRenderer:UpdateName(min, max, mode)
     else
         label = displayName .. " (@" .. userName .. ")"
     end
-    self.nameText.Size     = 16
+    local fontSize = math.clamp(math.round((max.Y - min.Y) * 0.15), 8, 16)
+    self.nameText.Size     = fontSize
     self.nameText.Text     = label
-    self.nameText.Position = Vector2.new(math.round((min.X+max.X)/2), math.round(min.Y-18))
+    self.nameText.Position = Vector2.new(math.round((min.X+max.X)/2), math.round(min.Y - fontSize - 2))
     self.nameText.Visible  = true
 end
 
@@ -231,7 +232,7 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
 
     if showText then
         self.healthText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
-        self.healthText.Position = Vector2.new(barX-25, math.round(top + height/2 - 5))
+        self.healthText.Position = Vector2.new(barX, math.round(top + height/2 - 5))
         self.healthText.Center   = true
         self.healthText.Visible  = true
     else
