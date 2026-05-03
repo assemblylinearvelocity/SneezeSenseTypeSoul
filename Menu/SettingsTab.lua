@@ -25,11 +25,13 @@ local function AttachHair(char, assetId, offset, rotation)
     local head   = char:FindFirstChild("Head")
     if handle and handle:IsA("BasePart") and head then
         local w = Instance.new("Weld")
+        w.Name  = "HairWeld"
         w.Part0 = head
         w.Part1 = handle
         w.C0 = CFrame.new(offset[1], offset[2], offset[3])
              * CFrame.Angles(math.rad(rotation[1]), math.rad(rotation[2]), math.rad(rotation[3]))
         w.Parent = handle
+        handle.Massless = true
     end
 end
 
@@ -38,12 +40,22 @@ local function AttachClothing(char, shirtId, pantsId)
         if v:IsA("Shirt") or v:IsA("Pants") then v:Destroy() end
     end
     if shirtId then
-        local s = Instance.new("Shirt", char)
-        s.ShirtTemplate = "rbxassetid://"..tostring(shirtId)
+        pcall(function()
+            local obj = game:GetObjects("rbxassetid://"..tostring(shirtId))[1]
+            if obj then
+                obj.Name   = "Shirt"
+                obj.Parent = char
+            end
+        end)
     end
     if pantsId then
-        local p = Instance.new("Pants", char)
-        p.PantsTemplate = "rbxassetid://"..tostring(pantsId)
+        pcall(function()
+            local obj = game:GetObjects("rbxassetid://"..tostring(pantsId))[1]
+            if obj then
+                obj.Name   = "Pants"
+                obj.Parent = char
+            end
+        end)
     end
 end
 
@@ -60,7 +72,10 @@ local function ClearMorph(char)
     for _, v in ipairs(char:GetDescendants()) do
         if v:IsA("Accessory") or v:IsA("Hat") then v:Destroy() end
         if v:IsA("Shirt") or v:IsA("Pants") then v:Destroy() end
-        if v:IsA("Weld") and (v.Name == "HairWeld" or v.Name == "LeftArmWeld" or v.Name == "RightArmWeld") then v:Destroy() end
+        if v:IsA("Weld") and v.Name == "HairWeld" then v:Destroy() end
+    end
+    for _, v in ipairs(char:GetChildren()) do
+        if v:IsA("Tool") and v:FindFirstChild("Handle") then v:Destroy() end
     end
 end
 
