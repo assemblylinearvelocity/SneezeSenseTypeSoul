@@ -81,10 +81,8 @@ end
 local function GetHealth(character)
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if not humanoid then return 100, 100 end
-
     local maxHp = character:GetAttribute("MaxHealth") or humanoid.MaxHealth
     local hp    = humanoid.Health
-
     if maxHp <= 0 then maxHp = 100 end
     return math.clamp(hp, 0, maxHp), maxHp
 end
@@ -92,17 +90,9 @@ end
 local function HpToColor(pct)
     pct = math.clamp(pct, 0, 1)
     if pct > 0.5 then
-        return Color3.fromRGB(
-            math.floor(255 * (1 - pct) * 2),
-            255,
-            0
-        )
+        return Color3.fromRGB(math.floor(255 * (1 - pct) * 2), 255, 0)
     else
-        return Color3.fromRGB(
-            255,
-            math.floor(255 * pct * 2),
-            0
-        )
+        return Color3.fromRGB(255, math.floor(255 * pct * 2), 0)
     end
 end
 
@@ -125,11 +115,11 @@ function EspRenderer.new(player)
     }
 
     local healthText = Drawing.new("Text")
-    healthText.Visible  = false
-    healthText.Size     = 11
-    healthText.Center   = false
-    healthText.Outline  = true
-    healthText.Color    = Color3.fromRGB(255, 255, 255)
+    healthText.Visible = false
+    healthText.Size    = 11
+    healthText.Center  = false
+    healthText.Outline = true
+    healthText.Color   = Color3.fromRGB(255, 255, 255)
     self.healthText = healthText
 
     self._smoothHp = 1
@@ -138,7 +128,6 @@ end
 
 function EspRenderer:UpdateBox(min, max, color)
     local o, i = 1, 1
-
     ApplySet(self.box.outer,
         Vector2.new(min.X - o, min.Y - o), Vector2.new(max.X + o, min.Y - o),
         Vector2.new(min.X - o, max.Y + o), Vector2.new(max.X + o, max.Y + o)
@@ -151,10 +140,18 @@ function EspRenderer:UpdateBox(min, max, color)
         Vector2.new(min.X + i, min.Y + i), Vector2.new(max.X - i, min.Y + i),
         Vector2.new(min.X + i, max.Y - i), Vector2.new(max.X - i, max.Y - i)
     )
-
     for _, l in pairs(self.box.main) do
         l.Color = color or Color3.fromRGB(255, 255, 255)
     end
+end
+
+function EspRenderer:HideHealthBar()
+    self.healthBar.outlineLeft.Visible   = false
+    self.healthBar.outlineRight.Visible  = false
+    self.healthBar.outlineTop.Visible    = false
+    self.healthBar.outlineBottom.Visible = false
+    self.healthBar.fill.Visible          = false
+    self.healthText.Visible              = false
 end
 
 function EspRenderer:UpdateHealthBar(min, max, character, showText)
@@ -163,8 +160,7 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
 
     self._smoothHp = self._smoothHp + (targetPct - self._smoothHp) * SMOOTH_SPEED
 
-    local pct = math.clamp(self._smoothHp, 0, 1)
-
+    local pct    = math.clamp(self._smoothHp, 0, 1)
     local top    = min.Y
     local bottom = max.Y
     local height = bottom - top
@@ -193,9 +189,8 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self.healthBar.fill.Visible = pct > 0
 
     if showText then
-        local midY = top + (height / 2)
         self.healthText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
-        self.healthText.Position = Vector2.new(barX - 3, midY - 6)
+        self.healthText.Position = Vector2.new(barX - 3, top + (height / 2) - 6)
         self.healthText.Color    = Color3.fromRGB(255, 255, 255)
         self.healthText.Visible  = true
     else
@@ -207,12 +202,7 @@ function EspRenderer:HideBox()
     for _, set in pairs(self.box) do
         SetSetVisible(set, false)
     end
-    self.healthBar.outlineLeft.Visible   = false
-    self.healthBar.outlineRight.Visible  = false
-    self.healthBar.outlineTop.Visible    = false
-    self.healthBar.outlineBottom.Visible = false
-    self.healthBar.fill.Visible          = false
-    self.healthText.Visible              = false
+    self:HideHealthBar()
 end
 
 function EspRenderer:Update(character, flags)
@@ -227,12 +217,7 @@ function EspRenderer:Update(character, flags)
             if hpBarOn then
                 self:UpdateHealthBar(min, max, character, flags["Health Text"])
             else
-                self.healthBar.outlineLeft.Visible   = false
-                self.healthBar.outlineRight.Visible  = false
-                self.healthBar.outlineTop.Visible    = false
-                self.healthBar.outlineBottom.Visible = false
-                self.healthBar.fill.Visible          = false
-                self.healthText.Visible              = false
+                self:HideHealthBar()
             end
         else
             self:HideBox()
