@@ -251,18 +251,23 @@ end
 function EspRenderer:Update(character, flags)
     local boxOn    = flags["Box ESP"]
     local hpBarOn  = flags["HP Bar"]
+    local nameOn   = flags["Name ESP"]
     local boxColor = (flags["Box Color"] and flags["Box Color"].Color) or Color3.fromRGB(255,255,255)
 
-    if boxOn and character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChildOfClass("Humanoid") then
+    if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChildOfClass("Humanoid") then
         local min, max = GetBoundingBox(character)
         if min and max then
-            self:UpdateBox(min, max, boxColor)
+            if boxOn then
+                self:UpdateBox(min, max, boxColor)
+            else
+                for _, set in pairs(self.box) do SetSetVisible(set, false) end
+            end
             if hpBarOn then
                 self:UpdateHealthBar(min, max, character, flags["Health Text"])
             else
                 self:HideHealthBar()
             end
-            if flags["Name ESP"] then
+            if nameOn then
                 self:UpdateName(min, max, flags["Name Mode"] or "Both")
             else
                 self:HideName()
