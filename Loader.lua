@@ -79,7 +79,7 @@ task.spawn(function()
         CombatTab.Init(CombatPage, AutoParry)
         VisualsTab.Init(VisualsPage, Visuals)
         MiscTab:Init(MiscPage, WorldModulation, Automation)
-        SettingsTab.Init(SettingsPage, Library, KeybindList, Watermark)
+        SettingsTab.Init(SettingsPage, Library, KeybindList, Watermark, SneezeSense.detach)
 
         Library.MenuKeybind = tostring(Enum.KeyCode.RightControl)
     end

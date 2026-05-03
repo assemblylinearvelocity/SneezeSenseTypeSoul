@@ -1,6 +1,6 @@
 local SettingsTab = {}
 
-function SettingsTab.Init(Page, Library, KeybindList, Watermark)
+function SettingsTab.Init(Page, Library, KeybindList, Watermark, DetachCallback)
     local SettingsSection = Page:Section({ Name = "Settings", Side = 1 })
 
     SettingsSection:Label({ Name = "Menu Keybind", Alignment = "Left" }):Keybind({
@@ -37,7 +37,7 @@ function SettingsTab.Init(Page, Library, KeybindList, Watermark)
     SettingsSection:Button({
         Name     = "Unload",
         Callback = function()
-            Library:Unload()
+            DetachCallback()
         end
     })
 end
