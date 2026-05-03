@@ -82,6 +82,11 @@ function VisualsTab.Init(Page, Visuals)
             MobDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
+    }):Colorpicker({
+        Name     = "Mob Color",
+        Flag     = "Mob Color",
+        Default  = Color3.fromRGB(255, 200, 100),
+        Callback = function() Visuals:Update() end
     })
 
     MobBoxToggle = MobSection:Toggle({
@@ -140,6 +145,11 @@ function VisualsTab.Init(Page, Visuals)
             NpcDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
+    }):Colorpicker({
+        Name     = "NPC Color",
+        Flag     = "NPC Color",
+        Default  = Color3.fromRGB(100, 220, 255),
+        Callback = function() Visuals:Update() end
     })
 
     NpcBoxToggle = NpcSection:Toggle({

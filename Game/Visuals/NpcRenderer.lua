@@ -130,26 +130,43 @@ local function AddNpc(model)
             return
         end
 
-        local sx = math.round(screenPos.X)
-        local sy = math.round(screenPos.Y)
+        local color = (flags["NPC Color"] and flags["NPC Color"].Color) or Color3.fromRGB(100, 220, 255)
 
         if flags["NPC Box"] then
             local min, max = GetBoundingBox(model)
             if min and max then
-                DrawBox(box, min, max, Color3.fromRGB(100, 220, 255))
+                DrawBox(box, min, max, color)
+
+                if flags["NPC Name"] then
+                    nameText.Size     = math.clamp(math.round((max.Y - min.Y) * 0.15), 10, 16)
+                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                    nameText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(min.Y - nameText.Size - 2))
+                    nameText.Color    = color
+                    nameText.Visible  = true
+                else
+                    nameText.Visible = false
+                end
             else
                 SetBoxVisible(box, false)
+                nameText.Visible = false
             end
         else
             SetBoxVisible(box, false)
-        end
 
-        if flags["NPC Name"] then
-            nameText.Text     = string.format("[%s] [%.0fm]", model.Name, dist)
-            nameText.Position = Vector2.new(sx, sy - 20)
-            nameText.Visible  = true
-        else
-            nameText.Visible = false
+            if flags["NPC Name"] then
+                local screenPos2, onScreen2 = Camera:WorldToViewportPoint(primary.Position)
+                if onScreen2 then
+                    nameText.Size     = 13
+                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                    nameText.Position = Vector2.new(math.round(screenPos2.X), math.round(screenPos2.Y - 20))
+                    nameText.Color    = color
+                    nameText.Visible  = true
+                else
+                    nameText.Visible = false
+                end
+            else
+                nameText.Visible = false
+            end
         end
     end)
 

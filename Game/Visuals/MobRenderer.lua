@@ -134,35 +134,60 @@ local function AddMob(model)
             return
         end
 
-        local sx = math.round(screenPos.X)
-        local sy = math.round(screenPos.Y)
+        local color = (flags["Mob Color"] and flags["Mob Color"].Color) or Color3.fromRGB(255, 200, 100)
 
         if flags["Mob Box"] then
             local min, max = GetBoundingBox(model)
             if min and max then
-                DrawBox(box, min, max, Color3.fromRGB(255, 200, 100))
+                DrawBox(box, min, max, color)
+
+                if flags["Mob Name"] then
+                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                    nameText.Size     = math.clamp(math.round((max.Y - min.Y) * 0.15), 10, 16)
+                    nameText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(min.Y - nameText.Size - 2))
+                    nameText.Color    = color
+                    nameText.Visible  = true
+                else
+                    nameText.Visible = false
+                end
+
+                if flags["Mob Health"] then
+                    local hp    = humanoid.Health
+                    local maxHp = math.max(humanoid.MaxHealth, 1)
+                    local BAR_GAP = 3
+                    local barX   = math.round(min.X - BAR_GAP - 1)
+                    local top    = math.round(min.Y)
+                    local bottom = math.round(max.Y)
+                    hpText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
+                    hpText.Position = Vector2.new(barX, math.round(top + (bottom - top) / 2 - 5))
+                    hpText.Color    = color
+                    hpText.Visible  = true
+                else
+                    hpText.Visible = false
+                end
             else
                 SetBoxVisible(box, false)
+                nameText.Visible = false
+                hpText.Visible   = false
             end
         else
             SetBoxVisible(box, false)
-        end
 
-        if flags["Mob Name"] then
-            nameText.Text     = string.format("[%s] [%.0fm]", model.Name, dist)
-            nameText.Position = Vector2.new(sx, sy - 20)
-            nameText.Visible  = true
-        else
-            nameText.Visible = false
-        end
+            if flags["Mob Name"] then
+                local screenPos2, onScreen2 = Camera:WorldToViewportPoint(hrp.Position)
+                if onScreen2 then
+                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                    nameText.Size     = 13
+                    nameText.Position = Vector2.new(math.round(screenPos2.X), math.round(screenPos2.Y - 20))
+                    nameText.Color    = color
+                    nameText.Visible  = true
+                else
+                    nameText.Visible = false
+                end
+            else
+                nameText.Visible = false
+            end
 
-        if flags["Mob Health"] then
-            local hp    = humanoid.Health
-            local maxHp = math.max(humanoid.MaxHealth, 1)
-            hpText.Text     = string.format("%.0f/%.0f", hp, maxHp)
-            hpText.Position = Vector2.new(sx, sy - 6)
-            hpText.Visible  = true
-        else
             hpText.Visible = false
         end
     end)
