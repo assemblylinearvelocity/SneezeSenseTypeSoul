@@ -181,13 +181,19 @@ end
 
 function EspRenderer:Update(character, flags)
     local boxOn    = flags["Box ESP"]
+    local hpBarOn  = flags["HP Bar"]
     local boxColor = (flags["Box Color"] and flags["Box Color"].Color) or Color3.fromRGB(255, 255, 255)
 
     if boxOn and character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChildOfClass("Humanoid") then
         local min, max = GetBoundingBox(character)
         if min and max then
             self:UpdateBox(min, max, boxColor)
-            self:UpdateHealthBar(min, max, character)
+            if hpBarOn then
+                self:UpdateHealthBar(min, max, character)
+            else
+                self.healthBar.outline.Visible = false
+                self.healthBar.fill.Visible    = false
+            end
         else
             self:HideBox()
         end

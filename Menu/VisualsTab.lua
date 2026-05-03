@@ -18,6 +18,15 @@ function VisualsTab.Init(Page, Visuals)
             Visuals:Update()
         end
     })
+
+    ESPSection:Toggle({
+        Name     = "HP Bar",
+        Flag     = "HP Bar",
+        Default  = false,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
 end
 
 return VisualsTab
