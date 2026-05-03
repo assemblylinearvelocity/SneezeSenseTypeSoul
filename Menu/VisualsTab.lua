@@ -19,14 +19,28 @@ function VisualsTab.Init(Page, Visuals)
         end
     })
 
+    local HealthTextToggle
+
     ESPSection:Toggle({
         Name     = "HP Bar",
         Flag     = "HP Bar",
         Default  = false,
         Callback = function(Value)
+            HealthTextToggle:SetVisiblity(Value)
             Visuals:Update()
         end
     })
+
+    HealthTextToggle = ESPSection:Toggle({
+        Name     = "Health Text",
+        Flag     = "Health Text",
+        Default  = false,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    HealthTextToggle:SetVisiblity(false)
 end
 
 return VisualsTab
