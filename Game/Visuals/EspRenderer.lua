@@ -113,8 +113,8 @@ function EspRenderer.new(player)
     self.healthBar = {
         outlineLeft   = NewLine(Color3.fromRGB(0, 0, 0), 1),
         outlineRight  = NewLine(Color3.fromRGB(0, 0, 0), 1),
-        outlineTop    = NewLine(Color3.fromRGB(0, 0, 0), 1),
-        outlineBottom = NewLine(Color3.fromRGB(0, 0, 0), 1),
+        outlineTop    = NewLine(Color3.fromRGB(0, 0, 0), 3),
+        outlineBottom = NewLine(Color3.fromRGB(0, 0, 0), 3),
         fill          = NewLine(Color3.fromRGB(0, 255, 0), 1),
     }
 
