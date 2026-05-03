@@ -218,8 +218,8 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self._smoothHp = self._smoothHp + (targetPct - self._smoothHp) * SMOOTH_SPEED
 
     local pct    = math.clamp(self._smoothHp, 0, 1)
-    local top    = math.round(min.Y) - 1
-    local bottom = math.round(max.Y) + 1
+    local top    = math.round(min.Y)
+    local bottom = math.round(max.Y)
     local height = bottom - top
     local barX   = math.round(min.X - BAR_GAP - 1)
     local fillY  = math.round(bottom - (height * pct))
@@ -233,14 +233,14 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self.healthBar.outlineRight.Visible = true
 
     self.healthBar.outlineTop.From    = Vector2.new(barX - 1, top - 1)
-    self.healthBar.outlineTop.To      = Vector2.new(barX + 1, top - 1)
+    self.healthBar.outlineTop.To      = Vector2.new(barX + 2, top - 1)
     self.healthBar.outlineTop.Visible = true
 
     self.healthBar.outlineBottom.From    = Vector2.new(barX - 1, bottom + 1)
-    self.healthBar.outlineBottom.To      = Vector2.new(barX + 1, bottom + 1)
+    self.healthBar.outlineBottom.To      = Vector2.new(barX + 2, bottom + 1)
     self.healthBar.outlineBottom.Visible = true
 
-    self.healthBar.fill.From    = Vector2.new(barX, fillY)
+    self.healthBar.fill.From    = Vector2.new(barX, math.max(fillY, top))
     self.healthBar.fill.To      = Vector2.new(barX, bottom)
     self.healthBar.fill.Color   = HpToColor(pct)
     self.healthBar.fill.Visible = pct > 0
