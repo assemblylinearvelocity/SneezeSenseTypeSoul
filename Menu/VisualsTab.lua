@@ -42,6 +42,30 @@ function VisualsTab.Init(Page, Visuals)
     })
 
     HealthTextToggle:SetVisiblity(false)
+
+    local NameModeDropdown
+
+    ESPSection:Toggle({
+        Name     = "Name ESP",
+        Flag     = "Name ESP",
+        Default  = false,
+        Callback = function(Value)
+            NameModeDropdown:SetVisibility(Value)
+            Visuals:Update()
+        end
+    })
+
+    NameModeDropdown = ESPSection:Dropdown({
+        Name     = "Name Mode",
+        Flag     = "Name Mode",
+        Default  = "Both",
+        Items    = { "Both", "Display Name", "Username" },
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    NameModeDropdown:SetVisibility(false)
 end
 
 return VisualsTab

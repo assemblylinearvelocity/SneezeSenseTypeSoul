@@ -126,6 +126,14 @@ function EspRenderer.new(player)
     healthText.Color   = Color3.fromRGB(255, 255, 255)
     self.healthText = healthText
 
+    local nameText = Drawing.new("Text")
+    nameText.Visible = false
+    nameText.Size    = 11
+    nameText.Center  = true
+    nameText.Outline = true
+    nameText.Color   = Color3.fromRGB(255, 255, 255)
+    self.nameText = nameText
+
     self._smoothHp = 1
     return self
 end
@@ -168,6 +176,30 @@ function EspRenderer:UpdateBox(min, max, color)
     self.box.inner.Left.From   = iTL ; self.box.inner.Left.To   = Vector2.new(iBL.X, iBL.Y + 1)
     self.box.inner.Right.From  = iTR ; self.box.inner.Right.To  = Vector2.new(iBR.X, iBR.Y + 1)
     for _, l in pairs(self.box.inner) do l.Visible = true end
+end
+
+function EspRenderer:UpdateName(min, max, mode)
+    local player = self.player
+    local displayName = player.DisplayName
+    local userName    = player.Name
+
+    local label
+    if mode == "Display Name" then
+        label = displayName
+    elseif mode == "Username" then
+        label = "@" .. userName
+    else
+        label = displayName .. " (@" .. userName .. ")"
+    end
+
+    local centerX = math.round((min.X + max.X) / 2)
+    self.nameText.Text     = label
+    self.nameText.Position = Vector2.new(centerX, math.round(min.Y - 14))
+    self.nameText.Visible  = true
+end
+
+function EspRenderer:HideName()
+    self.nameText.Visible = false
 end
 
 function EspRenderer:HideHealthBar()
@@ -227,6 +259,7 @@ function EspRenderer:HideBox()
         SetSetVisible(set, false)
     end
     self:HideHealthBar()
+    self:HideName()
 end
 
 function EspRenderer:Update(character, flags)
@@ -242,6 +275,12 @@ function EspRenderer:Update(character, flags)
                 self:UpdateHealthBar(min, max, character, flags["Health Text"])
             else
                 self:HideHealthBar()
+            end
+
+            if flags["Name ESP"] then
+                self:UpdateName(min, max, flags["Name Mode"] or "Both")
+            else
+                self:HideName()
             end
         else
             self:HideBox()
@@ -261,6 +300,7 @@ function EspRenderer:Destroy()
     self.healthBar.outlineBottom:Remove()
     self.healthBar.fill:Remove()
     self.healthText:Remove()
+    self.nameText:Remove()
 end
 
 return EspRenderer
