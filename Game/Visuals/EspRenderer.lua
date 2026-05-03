@@ -191,10 +191,9 @@ end
 function EspRenderer:UpdateRace(min, max, character)
     local race = character:GetAttribute("EntityType") or "Unknown"
     local centerY = math.round((min.Y + max.Y) / 2)
-    local fontSize = math.clamp(math.round((max.Y - min.Y) * 0.12), 11, 14)
-    self.raceText.Size     = fontSize
+    self.raceText.Size     = 13
     self.raceText.Text     = "[" .. race .. "]"
-    self.raceText.Position = Vector2.new(math.round(min.X - 5), centerY - math.round(fontSize / 2))
+    self.raceText.Position = Vector2.new(math.round(min.X - 40), centerY - 6)
     self.raceText.Center   = true
     self.raceText.Visible  = true
 end
