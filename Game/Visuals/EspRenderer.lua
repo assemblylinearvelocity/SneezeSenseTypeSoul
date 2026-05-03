@@ -227,8 +227,12 @@ function EspRenderer:Update(character, flags)
             if hpBarOn then
                 self:UpdateHealthBar(min, max, character, flags["Health Text"])
             else
-                self.healthBar.outline.Visible = false
-                self.healthBar.fill.Visible    = false
+                self.healthBar.outlineLeft.Visible   = false
+                self.healthBar.outlineRight.Visible  = false
+                self.healthBar.outlineTop.Visible    = false
+                self.healthBar.outlineBottom.Visible = false
+                self.healthBar.fill.Visible          = false
+                self.healthText.Visible              = false
             end
         else
             self:HideBox()
