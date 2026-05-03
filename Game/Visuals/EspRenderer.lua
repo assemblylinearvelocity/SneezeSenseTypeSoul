@@ -186,12 +186,11 @@ end
 
 function EspRenderer:UpdateRace(min, max, character)
     local race = character:GetAttribute("EntityType") or "Unknown"
-    local centerY = math.round((min.Y + max.Y) / 2)
     self.raceText.Size     = 13
     self.raceText.Text     = "[" .. tostring(race) .. "]"
-    self.raceText.Position = Vector2.new(math.round(min.X - 40), centerY - 6)
+    self.raceText.Position = Vector2.new(math.round(max.X + 3), math.round(min.Y))
+    self.raceText.Center   = false
     self.raceText.Visible  = true
-    print("[Race]", self.player.Name, race)
 end
 
 function EspRenderer:HideRace()
