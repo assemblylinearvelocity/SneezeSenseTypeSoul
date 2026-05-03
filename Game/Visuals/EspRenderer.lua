@@ -128,7 +128,7 @@ function EspRenderer.new(player)
 
     local nameText = Drawing.new("Text")
     nameText.Visible = false
-    nameText.Size    = 20
+    nameText.Size    = 16
     nameText.Center  = true
     nameText.Outline = true
     nameText.Color   = Color3.fromRGB(255, 255, 255)
@@ -251,7 +251,7 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
 
     if showText then
         self.healthText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
-        self.healthText.Position = Vector2.new(barX, math.round(top + (height / 2) - 5))
+        self.healthText.Position = Vector2.new(barX - 25, math.round(top + (height / 2) - 5))
         self.healthText.Center   = true
         self.healthText.Visible  = true
     else
