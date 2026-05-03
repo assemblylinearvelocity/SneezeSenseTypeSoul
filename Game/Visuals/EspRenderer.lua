@@ -7,9 +7,8 @@ local BODY_PARTS = {
     "Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "HumanoidRootPart"
 }
 
-local BAR_GAP       = 3
-local BAR_WIDTH     = 4
-local SMOOTH_SPEED  = 0.12
+local BAR_GAP      = 3
+local SMOOTH_SPEED = 0.12
 
 local function NewLine(color, thickness)
     local l = Drawing.new("Line")
@@ -118,8 +117,11 @@ function EspRenderer.new(player)
     }
 
     self.healthBar = {
-        outline = NewLine(Color3.fromRGB(0, 0, 0), BAR_WIDTH + 2),
-        fill    = NewLine(Color3.fromRGB(0, 255, 0), BAR_WIDTH),
+        outlineLeft   = NewLine(Color3.fromRGB(0, 0, 0), 1),
+        outlineRight  = NewLine(Color3.fromRGB(0, 0, 0), 1),
+        outlineTop    = NewLine(Color3.fromRGB(0, 0, 0), 1),
+        outlineBottom = NewLine(Color3.fromRGB(0, 0, 0), 1),
+        fill          = NewLine(Color3.fromRGB(0, 255, 0), 1),
     }
 
     self._smoothHp = 1
@@ -153,17 +155,31 @@ function EspRenderer:UpdateHealthBar(min, max, character)
 
     self._smoothHp = self._smoothHp + (targetPct - self._smoothHp) * SMOOTH_SPEED
 
-    local pct    = math.clamp(self._smoothHp, 0, 1)
-    local height = max.Y - min.Y
-    local barX   = min.X - BAR_GAP - 1
+    local pct = math.clamp(self._smoothHp, 0, 1)
 
-    local top    = min.Y
-    local bottom = max.Y
+    local o      = 1
+    local top    = min.Y - o
+    local bottom = max.Y + o
+    local height = bottom - top
+
+    local barX   = min.X - BAR_GAP - 1
     local fillY  = bottom - (height * pct)
 
-    self.healthBar.outline.From    = Vector2.new(barX, top - 1)
-    self.healthBar.outline.To      = Vector2.new(barX, bottom + 1)
-    self.healthBar.outline.Visible = true
+    self.healthBar.outlineLeft.From   = Vector2.new(barX - 1, top - 1)
+    self.healthBar.outlineLeft.To     = Vector2.new(barX - 1, bottom + 1)
+    self.healthBar.outlineLeft.Visible = true
+
+    self.healthBar.outlineRight.From  = Vector2.new(barX + 1, top - 1)
+    self.healthBar.outlineRight.To    = Vector2.new(barX + 1, bottom + 1)
+    self.healthBar.outlineRight.Visible = true
+
+    self.healthBar.outlineTop.From    = Vector2.new(barX - 1, top - 1)
+    self.healthBar.outlineTop.To      = Vector2.new(barX + 1, top - 1)
+    self.healthBar.outlineTop.Visible = true
+
+    self.healthBar.outlineBottom.From  = Vector2.new(barX - 1, bottom + 1)
+    self.healthBar.outlineBottom.To    = Vector2.new(barX + 1, bottom + 1)
+    self.healthBar.outlineBottom.Visible = true
 
     self.healthBar.fill.From    = Vector2.new(barX, fillY)
     self.healthBar.fill.To      = Vector2.new(barX, bottom)
@@ -175,8 +191,11 @@ function EspRenderer:HideBox()
     for _, set in pairs(self.box) do
         SetSetVisible(set, false)
     end
-    self.healthBar.outline.Visible = false
-    self.healthBar.fill.Visible    = false
+    self.healthBar.outlineLeft.Visible   = false
+    self.healthBar.outlineRight.Visible  = false
+    self.healthBar.outlineTop.Visible    = false
+    self.healthBar.outlineBottom.Visible = false
+    self.healthBar.fill.Visible          = false
 end
 
 function EspRenderer:Update(character, flags)
@@ -206,7 +225,10 @@ function EspRenderer:Destroy()
     for _, set in pairs(self.box) do
         for _, l in pairs(set) do l:Remove() end
     end
-    self.healthBar.outline:Remove()
+    self.healthBar.outlineLeft:Remove()
+    self.healthBar.outlineRight:Remove()
+    self.healthBar.outlineTop:Remove()
+    self.healthBar.outlineBottom:Remove()
     self.healthBar.fill:Remove()
 end
 
