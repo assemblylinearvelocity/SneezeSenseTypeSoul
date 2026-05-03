@@ -189,7 +189,7 @@ function EspRenderer:UpdateRace(min, max, character)
     local fontSize = math.clamp(math.round((max.Y - min.Y) * 0.15), 8, 13)
     self.raceText.Size     = fontSize
     self.raceText.Text     = "[" .. tostring(race) .. "]"
-    self.raceText.Position = Vector2.new(math.round(max.X + 3), math.round(min.Y))
+    self.raceText.Position = Vector2.new(math.round(max.X + 3), math.round(min.Y - fontSize / 2))
     self.raceText.Center   = false
     self.raceText.Visible  = true
 end
