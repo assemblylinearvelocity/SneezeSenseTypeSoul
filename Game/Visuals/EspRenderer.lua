@@ -194,7 +194,7 @@ function EspRenderer:UpdateName(min, max, mode)
 
     local centerX = math.round((min.X + max.X) / 2)
     self.nameText.Text     = label
-    self.nameText.Position = Vector2.new(centerX, math.round(min.Y - 14))
+    self.nameText.Position = Vector2.new(centerX, math.round(min.Y - 26))
     self.nameText.Visible  = true
 end
 
@@ -232,12 +232,12 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self.healthBar.outlineRight.To      = Vector2.new(barX + 1, bottom)
     self.healthBar.outlineRight.Visible = true
 
-    self.healthBar.outlineTop.From    = Vector2.new(barX - 1, top)
-    self.healthBar.outlineTop.To      = Vector2.new(barX + 1, top)
+    self.healthBar.outlineTop.From    = Vector2.new(barX - 2, top)
+    self.healthBar.outlineTop.To      = Vector2.new(barX + 2, top)
     self.healthBar.outlineTop.Visible = true
 
-    self.healthBar.outlineBottom.From    = Vector2.new(barX - 1, bottom)
-    self.healthBar.outlineBottom.To      = Vector2.new(barX + 1, bottom)
+    self.healthBar.outlineBottom.From    = Vector2.new(barX - 2, bottom)
+    self.healthBar.outlineBottom.To      = Vector2.new(barX + 2, bottom)
     self.healthBar.outlineBottom.Visible = true
 
     self.healthBar.fill.From    = Vector2.new(barX, fillY)
