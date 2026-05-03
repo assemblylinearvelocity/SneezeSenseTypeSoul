@@ -251,7 +251,8 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
 
     if showText then
         self.healthText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
-        self.healthText.Position = Vector2.new(barX, top - 12)
+        self.healthText.Position = Vector2.new(barX, math.round(top + (height / 2) - 5))
+        self.healthText.Center   = true
         self.healthText.Visible  = true
     else
         self.healthText.Visible = false
