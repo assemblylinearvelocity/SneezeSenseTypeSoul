@@ -5,14 +5,14 @@ local function loadModule(path)
         return game:HttpGet(GITHUB_BASE .. path)
     end)
     if not success then
-        warn("Failed to fetch module:", path, result)
+        warn("[SneezeSense] Failed to fetch:", path, "|", result)
         return nil
     end
     local loadSuccess, module = pcall(function()
         return loadstring(result)()
     end)
     if not loadSuccess then
-        warn("Failed to load module:", path, module)
+        warn("[SneezeSense] Failed to execute:", path, "|", module)
         return nil
     end
     return module
