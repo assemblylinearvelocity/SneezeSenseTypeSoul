@@ -1,5 +1,5 @@
-local PlayerRenderer = {}
-PlayerRenderer.__index = PlayerRenderer
+local EspRenderer = {}
+EspRenderer.__index = EspRenderer
 
 local Camera = workspace.CurrentCamera
 
@@ -7,10 +7,14 @@ local BODY_PARTS = {
     "Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "HumanoidRootPart"
 }
 
+local BAR_GAP       = 3
+local BAR_WIDTH     = 4
+local SMOOTH_SPEED  = 0.12
+
 local function NewLine(color, thickness)
     local l = Drawing.new("Line")
-    l.Visible = false
-    l.Color = color
+    l.Visible   = false
+    l.Color     = color
     l.Thickness = thickness
     return l
 end
@@ -46,7 +50,7 @@ local function GetBoundingBox(character)
         if not part or not part:IsA("BasePart") then continue end
 
         local size = part.Size
-        local cf = part.CFrame
+        local cf   = part.CFrame
 
         local offsets = {
             Vector3.new( size.X / 2,  size.Y / 2,  size.Z / 2),
@@ -75,18 +79,54 @@ local function GetBoundingBox(character)
     return Vector2.new(minX, minY), Vector2.new(maxX, maxY)
 end
 
-function PlayerRenderer.new(player)
-    local self = setmetatable({}, PlayerRenderer)
+local function GetHealth(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return 100, 100 end
+
+    local maxHp = character:GetAttribute("MaxHealth") or humanoid.MaxHealth
+    local hp    = humanoid.Health
+
+    if maxHp <= 0 then maxHp = 100 end
+    return math.clamp(hp, 0, maxHp), maxHp
+end
+
+local function HpToColor(pct)
+    pct = math.clamp(pct, 0, 1)
+    if pct > 0.5 then
+        return Color3.fromRGB(
+            math.floor(255 * (1 - pct) * 2),
+            255,
+            0
+        )
+    else
+        return Color3.fromRGB(
+            255,
+            math.floor(255 * pct * 2),
+            0
+        )
+    end
+end
+
+function EspRenderer.new(player)
+    local self = setmetatable({}, EspRenderer)
     self.player = player
+
     self.box = {
         outer = NewBoxSet(Color3.fromRGB(0, 0, 0), 1),
         main  = NewBoxSet(Color3.fromRGB(255, 255, 255), 1),
         inner = NewBoxSet(Color3.fromRGB(0, 0, 0), 1),
     }
+
+    self.healthBar = {
+        outline = NewLine(Color3.fromRGB(0, 0, 0), BAR_WIDTH + 2),
+        fill    = NewLine(Color3.fromRGB(0, 255, 0), BAR_WIDTH),
+    }
+
+    self._smoothHp = 1
     return self
 end
 
-function PlayerRenderer:UpdateBox(min, max, color)
+function EspRenderer:UpdateBox(min, max, color)
     local o, i = 1, 1
 
     ApplySet(self.box.outer,
@@ -107,20 +147,47 @@ function PlayerRenderer:UpdateBox(min, max, color)
     end
 end
 
-function PlayerRenderer:HideBox()
+function EspRenderer:UpdateHealthBar(min, max, character)
+    local hp, maxHp = GetHealth(character)
+    local targetPct = hp / maxHp
+
+    self._smoothHp = self._smoothHp + (targetPct - self._smoothHp) * SMOOTH_SPEED
+
+    local pct    = math.clamp(self._smoothHp, 0, 1)
+    local height = max.Y - min.Y
+    local barX   = min.X - BAR_GAP - 1
+
+    local top    = min.Y
+    local bottom = max.Y
+    local fillY  = bottom - (height * pct)
+
+    self.healthBar.outline.From    = Vector2.new(barX, top - 1)
+    self.healthBar.outline.To      = Vector2.new(barX, bottom + 1)
+    self.healthBar.outline.Visible = true
+
+    self.healthBar.fill.From    = Vector2.new(barX, fillY)
+    self.healthBar.fill.To      = Vector2.new(barX, bottom)
+    self.healthBar.fill.Color   = HpToColor(pct)
+    self.healthBar.fill.Visible = pct > 0
+end
+
+function EspRenderer:HideBox()
     for _, set in pairs(self.box) do
         SetSetVisible(set, false)
     end
+    self.healthBar.outline.Visible = false
+    self.healthBar.fill.Visible    = false
 end
 
-function PlayerRenderer:Update(character, flags)
-    local boxOn = flags["Box ESP"]
+function EspRenderer:Update(character, flags)
+    local boxOn    = flags["Box ESP"]
     local boxColor = (flags["Box Color"] and flags["Box Color"].Color) or Color3.fromRGB(255, 255, 255)
 
     if boxOn and character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChildOfClass("Humanoid") then
         local min, max = GetBoundingBox(character)
         if min and max then
             self:UpdateBox(min, max, boxColor)
+            self:UpdateHealthBar(min, max, character)
         else
             self:HideBox()
         end
@@ -129,10 +196,12 @@ function PlayerRenderer:Update(character, flags)
     end
 end
 
-function PlayerRenderer:Destroy()
+function EspRenderer:Destroy()
     for _, set in pairs(self.box) do
         for _, l in pairs(set) do l:Remove() end
     end
+    self.healthBar.outline:Remove()
+    self.healthBar.fill:Remove()
 end
 
-return PlayerRenderer
+return EspRenderer
