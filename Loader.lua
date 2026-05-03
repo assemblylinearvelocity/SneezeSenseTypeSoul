@@ -31,6 +31,12 @@ task.spawn(function()
     local EspRenderer = loadModule("Game/Visuals/EspRenderer.lua")
     if not EspRenderer then return warn("Failed to load EspRenderer") end
 
+    local MobRenderer = loadModule("Game/Visuals/MobRenderer.lua")
+    if not MobRenderer then return warn("Failed to load MobRenderer") end
+
+    local NpcRenderer = loadModule("Game/Visuals/NpcRenderer.lua")
+    if not NpcRenderer then return warn("Failed to load NpcRenderer") end
+
     local Visuals = loadModule("Game/Visuals/Visuals.lua")
     if not Visuals then return warn("Failed to load Visuals") end
 
@@ -74,7 +80,7 @@ task.spawn(function()
         local MiscPage     = Window:Page({ Name = "Misc",     Columns = 2, Subtabs = false })
         local SettingsPage = Window:Page({ Name = "Settings", Columns = 2, Subtabs = false })
 
-        Visuals:Init(Library, EspRenderer)
+        Visuals:Init(Library, EspRenderer, MobRenderer, NpcRenderer)
 
         CombatTab.Init(CombatPage, AutoParry)
         VisualsTab.Init(VisualsPage, Visuals)

@@ -40,6 +40,15 @@ function SettingsTab.Init(Page, Library, KeybindList, Watermark, DetachCallback)
             DetachCallback()
         end
     })
+
+    SettingsSection:Toggle({
+        Name     = "Streamer Mode",
+        Flag     = "Streamer Mode",
+        Default  = false,
+        Callback = function(Value)
+            Watermark:SetVisibility(not Value)
+        end
+    })
 end
 
 return SettingsTab

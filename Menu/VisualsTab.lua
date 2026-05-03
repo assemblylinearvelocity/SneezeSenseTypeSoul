@@ -75,6 +75,111 @@ function VisualsTab.Init(Page, Visuals)
             Visuals:Update()
         end
     })
+
+    local MobSection = Page:Section({ Name = "Mob & NPC ESP", Side = 2 })
+
+    MobSection:Toggle({
+        Name     = "Mob ESP",
+        Flag     = "Mob ESP",
+        Default  = false,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    MobSection:Slider({
+        Name     = "Mob Distance",
+        Flag     = "Mob ESP Distance",
+        Min      = 50,
+        Max      = 2000,
+        Default  = 500,
+        Decimals = 1,
+        Compact  = true,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    MobSection:Toggle({
+        Name     = "NPC ESP",
+        Flag     = "NPC ESP",
+        Default  = false,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    MobSection:Slider({
+        Name     = "NPC Distance",
+        Flag     = "NPC ESP Distance",
+        Min      = 50,
+        Max      = 2000,
+        Default  = 500,
+        Decimals = 1,
+        Compact  = true,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    local CameraSection = Page:Section({ Name = "Camera", Side = 2 })
+
+    CameraSection:Toggle({
+        Name     = "FOV Changer",
+        Flag     = "FOV Changer",
+        Default  = false,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    CameraSection:Slider({
+        Name     = "FOV",
+        Flag     = "FOV Value",
+        Min      = 30,
+        Max      = 120,
+        Default  = 70,
+        Decimals = 1,
+        Compact  = true,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    CameraSection:Toggle({
+        Name     = "Freecam",
+        Flag     = "Freecam",
+        Default  = false,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    CameraSection:Slider({
+        Name     = "Freecam Speed",
+        Flag     = "Freecam Speed",
+        Min      = 0.1,
+        Max      = 10,
+        Default  = 0.5,
+        Decimals = 0.1,
+        Compact  = true,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
+
+    CameraSection:Slider({
+        Name     = "Freecam Sens",
+        Flag     = "Freecam Sens",
+        Min      = 0.1,
+        Max      = 5,
+        Default  = 0.3,
+        Decimals = 0.1,
+        Compact  = true,
+        Callback = function(Value)
+            Visuals:Update()
+        end
+    })
 end
 
 return VisualsTab
