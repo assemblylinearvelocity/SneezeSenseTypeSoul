@@ -193,7 +193,7 @@ function EspRenderer:UpdateName(min, max, mode)
     end
 
     local boxHeight = max.Y - min.Y
-    local fontSize  = math.clamp(math.round(boxHeight * 0.12), 8, 20)
+    local fontSize  = 20
     local centerX   = math.round((min.X + max.X) / 2)
 
     self.nameText.Size     = fontSize
