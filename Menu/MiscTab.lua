@@ -36,6 +36,19 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Callback = function() WorldModulation:Update() end
     })
 
+    WorldSection:Slider({
+        Name     = "Brightness",
+        Flag     = "Brightness Value",
+        Min      = 0,
+        Max      = 10,
+        Default  = 2,
+        Decimals = 0.1,
+        Compact  = true,
+        Callback = function(Value)
+            game:GetService("Lighting").Brightness = Value
+        end
+    })
+
     local AutomationSection = Page:Section({ Name = "Automation", Side = 2 })
 
     AutomationSection:Toggle({
@@ -49,8 +62,7 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Default  = Enum.KeyCode.Y,
         Mode     = "Toggle",
         Callback = function(Value)
-            _G.Flags = _G.Flags or {}
-            _G.Flags["Fly"] = Value
+            if _G.Flags then _G.Flags["Fly"] = Value end
             Automation:Update()
         end
     })
@@ -58,8 +70,8 @@ function MiscTab:Init(Page, WorldModulation, Automation)
     AutomationSection:Slider({
         Name     = "Fly Speed",
         Flag     = "Fly Speed",
-        Min      = 10,
-        Max      = 500,
+        Min      = 0,
+        Max      = 1000,
         Default  = 100,
         Decimals = 1,
         Compact  = true,
@@ -71,13 +83,22 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Flag     = "Speedhack",
         Default  = false,
         Callback = function() Automation:Update() end
+    }):Keybind({
+        Name     = "Speed Bind",
+        Flag     = "Speed Bind",
+        Default  = Enum.KeyCode.N,
+        Mode     = "Toggle",
+        Callback = function(Value)
+            if _G.Flags then _G.Flags["Speedhack"] = Value end
+            Automation:Update()
+        end
     })
 
     AutomationSection:Slider({
         Name     = "Speed",
-        Flag     = "Speedhack Value",
-        Min      = 10,
-        Max      = 500,
+        Flag     = "Speed Value",
+        Min      = 0,
+        Max      = 1000,
         Default  = 100,
         Decimals = 1,
         Compact  = true,
@@ -92,11 +113,10 @@ function MiscTab:Init(Page, WorldModulation, Automation)
     }):Keybind({
         Name     = "Noclip Bind",
         Flag     = "Noclip Bind",
-        Default  = Enum.KeyCode.N,
+        Default  = Enum.KeyCode.Unknown,
         Mode     = "Toggle",
         Callback = function(Value)
-            _G.Flags = _G.Flags or {}
-            _G.Flags["Noclip"] = Value
+            if _G.Flags then _G.Flags["Noclip"] = Value end
             Automation:Update()
         end
     })
@@ -112,38 +132,20 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Default  = Enum.KeyCode.H,
         Mode     = "Toggle",
         Callback = function(Value)
-            _G.Flags = _G.Flags or {}
-            _G.Flags["Inf Jump"] = Value
+            if _G.Flags then _G.Flags["Inf Jump"] = Value end
             Automation:Update()
         end
     })
 
     AutomationSection:Slider({
-        Name     = "Jump Power",
+        Name     = "Jump Height",
         Flag     = "Jump Power",
-        Min      = 10,
-        Max      = 200,
+        Min      = 0,
+        Max      = 1000,
         Default  = 50,
         Decimals = 1,
         Compact  = true,
         Callback = function() Automation:Update() end
-    })
-
-    AutomationSection:Toggle({
-        Name     = "No Fall",
-        Flag     = "No Fall",
-        Default  = false,
-        Callback = function() Automation:Update() end
-    }):Keybind({
-        Name     = "No Fall Bind",
-        Flag     = "No Fall Bind",
-        Default  = Enum.KeyCode.Unknown,
-        Mode     = "Toggle",
-        Callback = function(Value)
-            _G.Flags = _G.Flags or {}
-            _G.Flags["No Fall"] = Value
-            Automation:Update()
-        end
     })
 end
 
