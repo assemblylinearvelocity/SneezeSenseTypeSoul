@@ -233,11 +233,11 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self.healthBar.outlineRight.Visible = true
 
     self.healthBar.outlineTop.From    = Vector2.new(barX - 1, top - 1)
-    self.healthBar.outlineTop.To      = Vector2.new(barX + 2, top - 1)
+    self.healthBar.outlineTop.To      = Vector2.new(barX + 1, top - 1)
     self.healthBar.outlineTop.Visible = true
 
     self.healthBar.outlineBottom.From    = Vector2.new(barX - 1, bottom + 1)
-    self.healthBar.outlineBottom.To      = Vector2.new(barX + 2, bottom + 1)
+    self.healthBar.outlineBottom.To      = Vector2.new(barX + 1, bottom + 1)
     self.healthBar.outlineBottom.Visible = true
 
     self.healthBar.fill.From    = Vector2.new(barX, fillY)
