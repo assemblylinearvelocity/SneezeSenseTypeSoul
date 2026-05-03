@@ -127,7 +127,7 @@ function EspRenderer.new(player)
     local healthText = Drawing.new("Text")
     healthText.Visible  = false
     healthText.Size     = 11
-    healthText.Center   = true
+    healthText.Center   = false
     healthText.Outline  = true
     healthText.Color    = Color3.fromRGB(255, 255, 255)
     self.healthText = healthText
@@ -165,28 +165,26 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
 
     local pct = math.clamp(self._smoothHp, 0, 1)
 
-    local o      = 1
-    local top    = min.Y - o
-    local bottom = max.Y + o
+    local top    = min.Y
+    local bottom = max.Y
     local height = bottom - top
+    local barX   = min.X - BAR_GAP - 1
+    local fillY  = bottom - (height * pct)
 
-    local barX  = min.X - BAR_GAP - 1
-    local fillY = bottom - (height * pct)
-
-    self.healthBar.outlineLeft.From    = Vector2.new(barX - 1, top - 1)
-    self.healthBar.outlineLeft.To      = Vector2.new(barX - 1, bottom + 1)
+    self.healthBar.outlineLeft.From    = Vector2.new(barX - 1, top)
+    self.healthBar.outlineLeft.To      = Vector2.new(barX - 1, bottom)
     self.healthBar.outlineLeft.Visible = true
 
-    self.healthBar.outlineRight.From    = Vector2.new(barX + 1, top - 1)
-    self.healthBar.outlineRight.To      = Vector2.new(barX + 1, bottom + 1)
+    self.healthBar.outlineRight.From    = Vector2.new(barX + 1, top)
+    self.healthBar.outlineRight.To      = Vector2.new(barX + 1, bottom)
     self.healthBar.outlineRight.Visible = true
 
-    self.healthBar.outlineTop.From    = Vector2.new(barX - 1, top - 1)
-    self.healthBar.outlineTop.To      = Vector2.new(barX + 1, top - 1)
+    self.healthBar.outlineTop.From    = Vector2.new(barX - 1, top)
+    self.healthBar.outlineTop.To      = Vector2.new(barX + 1, top)
     self.healthBar.outlineTop.Visible = true
 
-    self.healthBar.outlineBottom.From    = Vector2.new(barX - 1, bottom + 1)
-    self.healthBar.outlineBottom.To      = Vector2.new(barX + 1, bottom + 1)
+    self.healthBar.outlineBottom.From    = Vector2.new(barX - 1, bottom)
+    self.healthBar.outlineBottom.To      = Vector2.new(barX + 1, bottom)
     self.healthBar.outlineBottom.Visible = true
 
     self.healthBar.fill.From    = Vector2.new(barX, fillY)
@@ -195,11 +193,10 @@ function EspRenderer:UpdateHealthBar(min, max, character, showText)
     self.healthBar.fill.Visible = pct > 0
 
     if showText then
-        local realHp = math.floor(hp)
-        local realMax = math.floor(maxHp)
-        self.healthText.Text     = realHp .. "/" .. realMax
-        self.healthText.Position = Vector2.new(barX, top - 13)
-        self.healthText.Color    = HpToColor(pct)
+        local midY = top + (height / 2)
+        self.healthText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
+        self.healthText.Position = Vector2.new(barX - 3, midY - 6)
+        self.healthText.Color    = Color3.fromRGB(255, 255, 255)
         self.healthText.Visible  = true
     else
         self.healthText.Visible = false
