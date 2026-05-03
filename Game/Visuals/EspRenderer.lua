@@ -189,29 +189,7 @@ function EspRenderer:UpdateBox(min, max, color)
 end
 
 function EspRenderer:UpdateRace(min, max, character)
-    local race = "Unknown"
-
-    local raceKeywords = {
-        {"Shinigami", "Shinigami"},
-        {"Arrancar",  "Arrancar"},
-        {"Quincy",    "Quincy"},
-        {"Hollow",    "Hollow"},
-        {"Fullbring", "Fullbringer"},
-        {"Vizard",    "Vizard"},
-        {"Vastocar",  "Vastocar"},
-    }
-
-    for _, desc in ipairs(character:GetDescendants()) do
-        local name = desc.Name
-        for _, entry in ipairs(raceKeywords) do
-            if name:find(entry[1]) then
-                race = entry[2]
-                break
-            end
-        end
-        if race ~= "Unknown" then break end
-    end
-
+    local race = character:GetAttribute("EntityType") or "Unknown"
     local centerY = math.round((min.Y + max.Y) / 2)
     local fontSize = math.clamp(math.round((max.Y - min.Y) * 0.12), 11, 14)
     self.raceText.Size     = fontSize
