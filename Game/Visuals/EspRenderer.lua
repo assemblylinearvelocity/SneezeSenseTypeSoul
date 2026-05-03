@@ -128,7 +128,7 @@ function EspRenderer.new(player)
 
     local nameText = Drawing.new("Text")
     nameText.Visible = false
-    nameText.Size    = 11
+    nameText.Size    = 14
     nameText.Center  = true
     nameText.Outline = true
     nameText.Color   = Color3.fromRGB(255, 255, 255)
