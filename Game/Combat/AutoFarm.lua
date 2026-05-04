@@ -1,8 +1,6 @@
 local AutoFarm = {}
 
 local Players           = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService  = game:GetService("UserInputService")
 local VIM               = game:GetService("VirtualInputManager")
 local LocalPlayer       = Players.LocalPlayer
 
@@ -50,37 +48,21 @@ local function HasActiveQuest()
 end
 
 local function EquipWeapon()
-    pcall(function()
-        local char = LocalPlayer.Character
-        if not char then return end
-        local weaponRemote = char:WaitForChild("CharacterHandler", 5)
-        if weaponRemote then
-            weaponRemote = weaponRemote:WaitForChild("Remotes", 5)
-            if weaponRemote then
-                weaponRemote = weaponRemote:WaitForChild("Weapon", 5)
-                if weaponRemote then
-                    weaponRemote:FireServer()
-                end
-            end
-        end
-    end)
     VIM:SendKeyEvent(true,  Enum.KeyCode.E, false, game)
-    task.wait(0.1)
+    task.wait(0.15)
     VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
 end
 
 local function PressB()
     VIM:SendKeyEvent(true,  Enum.KeyCode.B, false, game)
-    task.wait(0.1)
+    task.wait(0.15)
     VIM:SendKeyEvent(false, Enum.KeyCode.B, false, game)
 end
 
 local function Attack()
-    pcall(function()
-        ReplicatedStorage:WaitForChild("Remotes")
-            :WaitForChild("ServerCombatHandler")
-            :FireServer("LightAttack")
-    end)
+    VIM:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+    task.wait(0.05)
+    VIM:SendMouseButtonEvent(0, 0, 0, false, game, 1)
 end
 
 local function IsWeaponEquipped()
