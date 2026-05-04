@@ -111,6 +111,7 @@ function EspRenderer.new(player)
     self.healthText = NewText(10)
     self.nameText   = NewText(16)
     self.raceText   = NewText(13)
+    self.distText   = NewText(11)
     self._smoothHp  = 1
     return self
 end
@@ -251,6 +252,7 @@ function EspRenderer:HideBox()
     self:HideHealthBar()
     self:HideName()
     self:HideRace()
+    self.distText.Visible = false
 end
 
 function EspRenderer:Update(character, flags)
@@ -282,6 +284,28 @@ function EspRenderer:Update(character, flags)
             else
                 self:HideRace()
             end
+
+            if flags["Player Distance"] then
+                local localChar = game:GetService("Players").LocalPlayer.Character
+                local localHRP  = localChar and localChar:FindFirstChild("HumanoidRootPart")
+                local hrp       = character:FindFirstChild("HumanoidRootPart")
+                if localHRP and hrp then
+                    local dist = (hrp.Position - localHRP.Position).Magnitude
+                    local unit = flags["Player Distance Unit"] or "studs"
+                    local label = unit == "m"
+                        and string.format("[%.0f m]", dist)
+                        or  string.format("[%.0f studs]", dist)
+                    self.distText.Size     = 11
+                    self.distText.Text     = label
+                    self.distText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(max.Y + 4))
+                    self.distText.Color    = Color3.fromRGB(200, 200, 200)
+                    self.distText.Visible  = true
+                else
+                    self.distText.Visible = false
+                end
+            else
+                self.distText.Visible = false
+            end
         else
             self:HideBox()
         end
@@ -302,6 +326,7 @@ function EspRenderer:Destroy()
     self.healthText:Remove()
     self.nameText:Remove()
     self.raceText:Remove()
+    self.distText:Remove()
 end
 
 return EspRenderer

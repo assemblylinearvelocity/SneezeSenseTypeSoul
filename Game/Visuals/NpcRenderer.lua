@@ -47,6 +47,7 @@ local function RemoveNpc(model)
     RunService:UnbindFromRenderStep(e.renderName)
     if e.nameText        then e.nameText:Remove()        end
     if e.hpText          then e.hpText:Remove()          end
+    if e.distText        then e.distText:Remove()        end
     if e.barFill         then e.barFill:Remove()         end
     if e.barOutlineLeft  then e.barOutlineLeft:Remove()  end
     if e.barOutlineRight then e.barOutlineRight:Remove() end
@@ -88,6 +89,7 @@ local function AddNpc(model)
     local color      = Color3.fromRGB(100, 220, 255)
     local nameText   = NewText(13, color)
     local hpText     = NewText(10, Color3.fromRGB(255,255,255))
+    local distText   = NewText(11, Color3.fromRGB(200, 200, 200))
     local barFill    = NewLine(Color3.fromRGB(0,255,0), 1)
     local barOL      = NewLine(Color3.fromRGB(0,0,0), 1)
     local barOR      = NewLine(Color3.fromRGB(0,0,0), 1)
@@ -194,6 +196,18 @@ local function AddNpc(model)
             barOT.Visible = false ; barOB.Visible = false
             hpText.Visible = false
         end
+
+        if flags["NPC Distance"] and min and max then
+            local unit = flags["NPC Distance Unit"] or "studs"
+            local label = unit == "m"
+                and string.format("[%.0f m]", dist)
+                or  string.format("[%.0f studs]", dist)
+            distText.Text     = label
+            distText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(max.Y + 4))
+            distText.Visible  = true
+        else
+            distText.Visible = false
+        end
     end)
 
     local ancestryConn = model.AncestryChanged:Connect(function(_, parent)
@@ -201,7 +215,7 @@ local function AddNpc(model)
     end)
 
     _active[model] = {
-        nameText=nameText, hpText=hpText,
+        nameText=nameText, hpText=hpText, distText=distText,
         barFill=barFill, barOutlineLeft=barOL, barOutlineRight=barOR,
         barOutlineTop=barOT, barOutlineBot=barOB,
         renderName=renderName, ancestryConn=ancestryConn

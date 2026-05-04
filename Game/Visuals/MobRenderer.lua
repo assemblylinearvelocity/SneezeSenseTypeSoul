@@ -84,6 +84,7 @@ local function RemoveMob(model)
     RunService:UnbindFromRenderStep(e.renderName)
     if e.nameText  then e.nameText:Remove()  end
     if e.hpText    then e.hpText:Remove()    end
+    if e.distText  then e.distText:Remove()  end
     if e.box       then for _, l in pairs(e.box) do l:Remove() end end
     if e.ancestryConn then e.ancestryConn:Disconnect() end
     _active[model] = nil
@@ -97,6 +98,7 @@ local function AddMob(model)
 
     local nameText = NewText(13, Color3.fromRGB(255, 200, 100))
     local hpText   = NewText(11, Color3.fromRGB(255, 200, 100))
+    local distText = NewText(11, Color3.fromRGB(200, 200, 200))
     local box      = NewBoxSet(Color3.fromRGB(255, 200, 100))
     local renderName = "MobESP_" .. model:GetDebugId()
 
@@ -112,6 +114,7 @@ local function AddMob(model)
         if not localHRP then
             nameText.Visible = false
             hpText.Visible   = false
+            distText.Visible = false
             SetBoxVisible(box, false)
             return
         end
@@ -122,6 +125,7 @@ local function AddMob(model)
         if dist > maxDist then
             nameText.Visible = false
             hpText.Visible   = false
+            distText.Visible = false
             SetBoxVisible(box, false)
             return
         end
@@ -130,6 +134,7 @@ local function AddMob(model)
         if not onScreen then
             nameText.Visible = false
             hpText.Visible   = false
+            distText.Visible = false
             SetBoxVisible(box, false)
             return
         end
@@ -190,13 +195,25 @@ local function AddMob(model)
 
             hpText.Visible = false
         end
+
+        if flags["Mob Distance"] and min and max then
+            local unit = flags["Mob Distance Unit"] or "studs"
+            local label = unit == "m"
+                and string.format("[%.0f m]", dist)
+                or  string.format("[%.0f studs]", dist)
+            distText.Text     = label
+            distText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(max.Y + 4))
+            distText.Visible  = true
+        else
+            distText.Visible = false
+        end
     end)
 
     local ancestryConn = model.AncestryChanged:Connect(function(_, parent)
         if not parent then RemoveMob(model) end
     end)
 
-    _active[model] = { nameText=nameText, hpText=hpText, box=box, renderName=renderName, ancestryConn=ancestryConn }
+    _active[model] = { nameText=nameText, hpText=hpText, distText=distText, box=box, renderName=renderName, ancestryConn=ancestryConn }
 end
 
 local function IsPlayer(model)
