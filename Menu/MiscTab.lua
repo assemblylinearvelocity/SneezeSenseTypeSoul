@@ -61,7 +61,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
     AutomationSection:Label({ Name = "Fly Keybind", Alignment = "Left" }):Keybind({
         Name     = "Fly Keybind",
         Flag     = "Fly Bind",
-        Default  = Enum.KeyCode.Y,
+        Default  = Enum.KeyCode.Unknown,
         Mode     = "Toggle",
         Callback = function(Value)
             FlyToggle:Set(Value)
@@ -89,7 +89,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
     AutomationSection:Label({ Name = "Speed Keybind", Alignment = "Left" }):Keybind({
         Name     = "Speed Keybind",
         Flag     = "Speed Bind",
-        Default  = Enum.KeyCode.N,
+        Default  = Enum.KeyCode.Unknown,
         Mode     = "Toggle",
         Callback = function(Value)
             SpeedToggle:Set(Value)
@@ -107,11 +107,19 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Callback = function() end
     })
 
-    local NoclipToggle = AutomationSection:Toggle({
+    local InfJumpToggle
+    local NoclipToggle
+
+    NoclipToggle = AutomationSection:Toggle({
         Name     = "Noclip",
         Flag     = "Noclip",
         Default  = false,
-        Callback = function() Automation:Update() end
+        Callback = function(Value)
+            if Value and InfJumpToggle then
+                InfJumpToggle:Set(false)
+            end
+            Automation:Update()
+        end
     })
 
     AutomationSection:Label({ Name = "Noclip Keybind", Alignment = "Left" }):Keybind({
@@ -120,23 +128,34 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = Enum.KeyCode.Unknown,
         Mode     = "Toggle",
         Callback = function(Value)
+            if Value and InfJumpToggle then
+                InfJumpToggle:Set(false)
+            end
             NoclipToggle:Set(Value)
         end
     })
 
-    local InfJumpToggle = AutomationSection:Toggle({
+    InfJumpToggle = AutomationSection:Toggle({
         Name     = "Inf Jump",
         Flag     = "Inf Jump",
         Default  = false,
-        Callback = function() Automation:Update() end
+        Callback = function(Value)
+            if Value and NoclipToggle then
+                NoclipToggle:Set(false)
+            end
+            Automation:Update()
+        end
     })
 
     AutomationSection:Label({ Name = "Inf Jump Keybind", Alignment = "Left" }):Keybind({
         Name     = "Inf Jump Keybind",
         Flag     = "Inf Jump Bind",
-        Default  = Enum.KeyCode.H,
+        Default  = Enum.KeyCode.Unknown,
         Mode     = "Toggle",
         Callback = function(Value)
+            if Value and NoclipToggle then
+                NoclipToggle:Set(false)
+            end
             InfJumpToggle:Set(Value)
         end
     })
