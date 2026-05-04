@@ -18,17 +18,30 @@ local function GetHRP()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
+local TweenService = game:GetService("TweenService")
+
 local function TeleportTo(pos)
     local hrp = GetHRP()
     if not hrp then return end
-    hrp.CFrame = CFrame.new(pos)
-    -- Anchor briefly so server accepts the position
-    local bv = Instance.new("BodyVelocity")
-    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-    bv.Velocity = Vector3.zero
-    bv.Parent = hrp
-    task.wait(0.2)
-    bv:Destroy()
+    local dist = (hrp.Position - pos).Magnitude
+    if dist < 5 then
+        hrp.CFrame = CFrame.new(pos)
+        return
+    end
+    local speed = 100
+    local duration = dist / speed
+    local startPos = hrp.Position
+    local elapsed = 0
+    while elapsed < duration do
+        local hrp2 = GetHRP()
+        if not hrp2 then break end
+        elapsed = elapsed + task.wait()
+        local alpha = math.min(elapsed / duration, 1)
+        hrp2.CFrame = CFrame.new(startPos:Lerp(pos, alpha), pos)
+        hrp2.AssemblyLinearVelocity = Vector3.zero
+    end
+    local hrp3 = GetHRP()
+    if hrp3 then hrp3.CFrame = CFrame.new(pos) end
 end
 
 local function HasActiveQuest()
