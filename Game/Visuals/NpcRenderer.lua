@@ -146,12 +146,12 @@ local function AddNpc(model)
             if min and max then
                 local fontSize = math.clamp(math.round((max.Y - min.Y) * 0.15), 10, 16)
                 nameText.Size     = fontSize
-                nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                nameText.Text     = model.Name
                 nameText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(min.Y - fontSize - 2))
                 nameText.Color    = npcColor
                 nameText.Visible  = true
             else
-                nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                nameText.Text     = model.Name
                 nameText.Size     = 13
                 nameText.Position = Vector2.new(math.round(screenPos.X), math.round(screenPos.Y - 20))
                 nameText.Color    = npcColor

@@ -170,8 +170,6 @@ local function AddMob(model)
         else
             nameText.Visible = false
         end
-
-        if flags["Mob HP Bar"] and min and max then
             local hp    = humanoid.Health
             local maxHp = math.max(humanoid.MaxHealth, 1)
             smoothHp = smoothHp + (hp/maxHp - smoothHp) * SMOOTH_SPEED
