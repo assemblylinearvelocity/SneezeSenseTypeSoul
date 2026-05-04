@@ -64,6 +64,28 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function() Visuals:Update() end
     })
 
+    local PlayerDistToggle
+    local PlayerDistUnitDropdown
+
+    PlayerDistToggle = ESPSection:Toggle({
+        Name     = "Distance",
+        Flag     = "Player Distance",
+        Default  = false,
+        Callback = function(Value)
+            PlayerDistUnitDropdown:SetVisibility(Value)
+            Visuals:Update()
+        end
+    })
+
+    PlayerDistUnitDropdown = ESPSection:Dropdown({
+        Name     = "Unit",
+        Flag     = "Player Distance Unit",
+        Default  = "studs",
+        Items    = { "studs", "m" },
+        Callback = function() Visuals:Update() end
+    })
+    PlayerDistUnitDropdown:SetVisibility(false)
+
     local MobSection = Page:Section({ Name = "Mob ESP", Side = 2 })
 
     local MobBoxToggle
@@ -128,6 +150,31 @@ function VisualsTab.Init(Page, Visuals)
     MobNameToggle:SetVisiblity(false)
     MobHealthToggle:SetVisiblity(false)
     MobDistSlider:SetVisibility(false)
+
+    local MobDistToggle
+    local MobDistUnitDropdown
+
+    MobDistToggle = MobSection:Toggle({
+        Name     = "Show Distance",
+        Flag     = "Mob Distance",
+        Sub      = true,
+        Default  = false,
+        Callback = function(Value)
+            MobDistUnitDropdown:SetVisibility(Value)
+            Visuals:Update()
+        end
+    })
+
+    MobDistUnitDropdown = MobSection:Dropdown({
+        Name     = "Unit",
+        Flag     = "Mob Distance Unit",
+        Default  = "studs",
+        Items    = { "studs", "m" },
+        Callback = function() Visuals:Update() end
+    })
+
+    MobDistToggle:SetVisiblity(false)
+    MobDistUnitDropdown:SetVisibility(false)
 
     local NpcSection = Page:Section({ Name = "NPC ESP", Side = 2 })
 
@@ -195,6 +242,31 @@ function VisualsTab.Init(Page, Visuals)
     NpcHpBarToggle:SetVisiblity(false)
     NpcHpTextToggle:SetVisiblity(false)
     NpcDistSlider:SetVisibility(false)
+
+    local NpcDistToggle
+    local NpcDistUnitDropdown
+
+    NpcDistToggle = NpcSection:Toggle({
+        Name     = "Show Distance",
+        Flag     = "NPC Distance",
+        Sub      = true,
+        Default  = false,
+        Callback = function(Value)
+            NpcDistUnitDropdown:SetVisibility(Value)
+            Visuals:Update()
+        end
+    })
+
+    NpcDistUnitDropdown = NpcSection:Dropdown({
+        Name     = "Unit",
+        Flag     = "NPC Distance Unit",
+        Default  = "studs",
+        Items    = { "studs", "m" },
+        Callback = function() Visuals:Update() end
+    })
+
+    NpcDistToggle:SetVisiblity(false)
+    NpcDistUnitDropdown:SetVisibility(false)
 
     local CameraSection = Page:Section({ Name = "Camera", Side = 2 })
 
