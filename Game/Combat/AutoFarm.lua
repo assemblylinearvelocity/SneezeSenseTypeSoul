@@ -87,6 +87,9 @@ local function AcceptQuest()
     task.wait(1)
 end
 
+local FARM_RANGE  = 150
+local GRIP_RANGE  = 20
+
 local function GetNearestTarget()
     local hrp = GetHRP()
     if not hrp then return nil, nil end
@@ -103,12 +106,12 @@ local function GetNearestTarget()
             if hum and mobHRP then
                 local dist  = (hrp.Position - mobHRP.Position).Magnitude
                 local state = child:GetAttribute("CurrentState")
-                if state == "Unconscious" then
+                if state == "Unconscious" and dist <= GRIP_RANGE then
                     if dist < downedD then
                         nearestDowned = child
                         downedD = dist
                     end
-                elseif hum.Health > 0 then
+                elseif hum.Health > 0 and dist <= FARM_RANGE then
                     if dist < aliveD then
                         nearestAlive = child
                         aliveD = dist
@@ -128,6 +131,8 @@ local function FarmLoop()
 
         if not HasActiveQuest() then
             AcceptQuest()
+            task.wait(1)
+            continue
         end
 
         local alive, downed = GetNearestTarget()
