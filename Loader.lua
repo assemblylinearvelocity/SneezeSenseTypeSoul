@@ -49,9 +49,6 @@ task.spawn(function()
     local AutoParry = loadModule("Game/Combat/AutoParry.lua")
     if not AutoParry then return warn("Failed to load AutoParry") end
 
-    local AutoFarm = loadModule("Game/Combat/AutoFarm.lua")
-    if not AutoFarm then return warn("Failed to load AutoFarm") end
-
     local CombatTab = loadModule("Menu/CombatTab.lua")
     if not CombatTab then return warn("Failed to load CombatTab") end
 
@@ -86,9 +83,8 @@ task.spawn(function()
         Visuals:Init(Library, EspRenderer, MobRenderer, NpcRenderer)
         Automation:Init(Library)
         WorldModulation:Init(Library)
-        AutoFarm:Init(Library)
 
-        CombatTab.Init(CombatPage, AutoParry, AutoFarm)
+        CombatTab.Init(CombatPage, AutoParry)
         VisualsTab.Init(VisualsPage, Visuals)
         MiscTab:Init(MiscPage, WorldModulation, Automation, Library)
         SettingsTab.Init(SettingsPage, Library, KeybindList, Watermark, SneezeSense.detach)
@@ -99,9 +95,6 @@ task.spawn(function()
     function SneezeSense.detach()
         if AutoParry and AutoParry.Enabled then
             AutoParry:Stop()
-        end
-        if AutoFarm then
-            AutoFarm:Unload()
         end
         if Visuals then
             Visuals:Unload()

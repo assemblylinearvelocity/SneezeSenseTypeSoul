@@ -1,11 +1,11 @@
 local CombatTab = {}
 
 function CombatTab.Init(Page, AutoParry, AutoFarm)
-    local FarmSection = Page:Section({ Name = "Auto Farm", Side = 1 })
+    local FarmSection = Page:Section({ Name = "Mission Farm", Side = 1 })
 
     FarmSection:Toggle({
-        Name     = "Auto Farm",
-        Flag     = "Auto Farm",
+        Name     = "Mission Farm",
+        Flag     = "Mission Farm",
         Default  = false,
         Callback = function()
             AutoFarm:Update()
