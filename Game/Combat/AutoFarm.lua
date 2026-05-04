@@ -49,6 +49,18 @@ local function HasActiveQuest()
     return gui and gui.Enabled
 end
 
+local function EquipWeapon()
+    VIM:SendKeyEvent(true,  Enum.KeyCode.E, false, game)
+    task.wait(0.1)
+    VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+end
+
+local function PressB()
+    VIM:SendKeyEvent(true,  Enum.KeyCode.B, false, game)
+    task.wait(0.1)
+    VIM:SendKeyEvent(false, Enum.KeyCode.B, false, game)
+end
+
 local function Attack()
     pcall(function()
         ReplicatedStorage:WaitForChild("Remotes")
@@ -57,7 +69,32 @@ local function Attack()
     end)
 end
 
-local function PressB()
+local function EquipWeapon()
+    pcall(function()
+        local char = LocalPlayer.Character
+        if not char then return end
+        local weaponRemote = char:WaitForChild("CharacterHandler", 5)
+        if weaponRemote then
+            weaponRemote = weaponRemote:WaitForChild("Remotes", 5)
+            if weaponRemote then
+                weaponRemote = weaponRemote:WaitForChild("Weapon", 5)
+                if weaponRemote then
+                    weaponRemote:FireServer()
+                end
+            end
+        end
+    end)
+    VIM:SendKeyEvent(true,  Enum.KeyCode.E, false, game)
+    task.wait(0.1)
+    VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+end
+
+local function IsWeaponEquipped()
+    local char = LocalPlayer.Character
+    if not char then return false end
+    return char:FindFirstChild("Zanpakuto") ~= nil
+        or char:FindFirstChildWhichIsA("Tool") ~= nil
+end
     VIM:SendKeyEvent(true,  Enum.KeyCode.B, false, game)
     task.wait(0.1)
     VIM:SendKeyEvent(false, Enum.KeyCode.B, false, game)
@@ -154,12 +191,23 @@ local function GetNearestTarget()
 end
 
 local function FarmLoop()
-    -- Clear the attacked-mob registry each new farm session
     _attackedMobs = {}
+
+    -- Equip weapon at start
+    if not IsWeaponEquipped() then
+        EquipWeapon()
+        task.wait(1)
+    end
 
     while _running do
         local flags = GetFlags()
         if not flags["Mission Farm"] then break end
+
+        -- Re-equip if weapon got unequipped
+        if not IsWeaponEquipped() then
+            EquipWeapon()
+            task.wait(0.5)
+        end
 
         if not HasActiveQuest() then
             AcceptQuest()
@@ -167,7 +215,6 @@ local function FarmLoop()
             continue
         end
 
-        -- Prune mobs that have been removed from the workspace (already gripped/dead)
         for mob in pairs(_attackedMobs) do
             if not mob.Parent then
                 _attackedMobs[mob] = nil
@@ -179,19 +226,18 @@ local function FarmLoop()
         if downed then
             local mobHRP = downed:FindFirstChild("HumanoidRootPart")
             if mobHRP then
-                TeleportTo(mobHRP.Position + Vector3.new(0, -1, 0))
+                TeleportTo(mobHRP.Position + Vector3.new(0, -5, 0))
                 task.wait(0.1)
                 PressB()
                 task.wait(0.3)
-                -- Remove from registry after gripping
                 _attackedMobs[downed] = nil
             end
         elseif alive then
             local mobHRP = alive:FindFirstChild("HumanoidRootPart")
             if mobHRP then
-                -- Register this mob as one we are attacking
                 _attackedMobs[alive] = true
-                TeleportTo(mobHRP.Position + Vector3.new(0, -2, 0))
+                -- Position below the mob so we don't take damage
+                TeleportTo(mobHRP.Position + Vector3.new(0, -5, 0))
                 task.wait(0.05)
                 Attack()
             end
