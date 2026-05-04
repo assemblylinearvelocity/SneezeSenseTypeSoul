@@ -228,7 +228,7 @@ local _addedConn = nil
 local function ScanNpcs()
     local npcs = workspace:FindFirstChild("NPCs")
     if not npcs then return end
-    for _, child in ipairs(npcs:GetDescendants()) do
+    for _, child in ipairs(npcs:GetChildren()) do
         if child:IsA("Model") then AddNpc(child) end
     end
 end
@@ -247,7 +247,7 @@ function NpcRenderer:Enable()
     if not _addedConn then
         local npcs = workspace:FindFirstChild("NPCs")
         if npcs then
-            _addedConn = npcs.DescendantAdded:Connect(function(child)
+            _addedConn = npcs.ChildAdded:Connect(function(child)
                 if child:IsA("Model") then task.wait(0.1) ; AddNpc(child) end
             end)
         end
