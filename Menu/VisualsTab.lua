@@ -131,8 +131,9 @@ function VisualsTab.Init(Page, Visuals)
 
     local NpcSection = Page:Section({ Name = "NPC ESP", Side = 2 })
 
-    local NpcBoxToggle
     local NpcNameToggle
+    local NpcHpBarToggle
+    local NpcHpTextToggle
     local NpcDistSlider
 
     NpcSection:Toggle({
@@ -140,8 +141,8 @@ function VisualsTab.Init(Page, Visuals)
         Flag     = "NPC ESP",
         Default  = false,
         Callback = function(Value)
-            NpcBoxToggle:SetVisiblity(Value)
             NpcNameToggle:SetVisiblity(Value)
+            NpcHpBarToggle:SetVisiblity(Value)
             NpcDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
@@ -152,19 +153,30 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function() Visuals:Update() end
     })
 
-    NpcBoxToggle = NpcSection:Toggle({
-        Name     = "Box",
-        Flag     = "NPC Box",
-        Sub      = true,
-        Default  = true,
-        Callback = function() Visuals:Update() end
-    })
-
     NpcNameToggle = NpcSection:Toggle({
         Name     = "Name",
         Flag     = "NPC Name",
         Sub      = true,
         Default  = true,
+        Callback = function() Visuals:Update() end
+    })
+
+    NpcHpBarToggle = NpcSection:Toggle({
+        Name     = "HP Bar",
+        Flag     = "NPC HP Bar",
+        Sub      = true,
+        Default  = false,
+        Callback = function(Value)
+            NpcHpTextToggle:SetVisiblity(Value)
+            Visuals:Update()
+        end
+    })
+
+    NpcHpTextToggle = NpcSection:Toggle({
+        Name     = "HP Text",
+        Flag     = "NPC HP Text",
+        Sub      = true,
+        Default  = false,
         Callback = function() Visuals:Update() end
     })
 
@@ -179,8 +191,9 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function() Visuals:Update() end
     })
 
-    NpcBoxToggle:SetVisiblity(false)
     NpcNameToggle:SetVisiblity(false)
+    NpcHpBarToggle:SetVisiblity(false)
+    NpcHpTextToggle:SetVisiblity(false)
     NpcDistSlider:SetVisibility(false)
 
     local CameraSection = Page:Section({ Name = "Camera", Side = 2 })

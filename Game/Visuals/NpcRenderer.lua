@@ -7,6 +7,9 @@ local Camera     = workspace.CurrentCamera
 local _active  = {}
 local _Library = nil
 
+local BAR_GAP      = 3
+local SMOOTH_SPEED = 0.12
+
 local function GetFlags()
     return _Library and _Library.Flags or {}
 end
@@ -21,40 +24,36 @@ local function NewText(size, color)
     return t
 end
 
-local function NewLine(color)
+local function NewLine(color, thickness)
     local l = Drawing.new("Line")
     l.Visible   = false
     l.Color     = color or Color3.fromRGB(100, 220, 255)
-    l.Thickness = 1
+    l.Thickness = thickness or 1
     return l
 end
 
-local function NewBoxSet(color)
-    return {
-        Top    = NewLine(color),
-        Bottom = NewLine(color),
-        Left   = NewLine(color),
-        Right  = NewLine(color),
-    }
-end
-
-local function SetBoxVisible(box, visible)
-    for _, l in pairs(box) do l.Visible = visible end
-end
-
-local function DrawBox(box, min, max, color)
-    local tl = Vector2.new(min.X, min.Y)
-    local tr = Vector2.new(max.X, min.Y)
-    local bl = Vector2.new(min.X, max.Y)
-    local br = Vector2.new(max.X, max.Y)
-    box.Top.From    = tl ; box.Top.To    = Vector2.new(tr.X+1, tr.Y)
-    box.Bottom.From = bl ; box.Bottom.To = Vector2.new(br.X+1, br.Y)
-    box.Left.From   = tl ; box.Left.To   = Vector2.new(bl.X, bl.Y+1)
-    box.Right.From  = tr ; box.Right.To  = Vector2.new(br.X, br.Y+1)
-    for _, l in pairs(box) do
-        l.Color   = color or Color3.fromRGB(100, 220, 255)
-        l.Visible = true
+local function HpToColor(pct)
+    pct = math.clamp(pct, 0, 1)
+    if pct > 0.5 then
+        return Color3.fromRGB(math.floor(255*(1-pct)*2), 255, 0)
+    else
+        return Color3.fromRGB(255, math.floor(255*pct*2), 0)
     end
+end
+
+local function RemoveNpc(model)
+    local e = _active[model]
+    if not e then return end
+    RunService:UnbindFromRenderStep(e.renderName)
+    if e.nameText        then e.nameText:Remove()        end
+    if e.hpText          then e.hpText:Remove()          end
+    if e.barFill         then e.barFill:Remove()         end
+    if e.barOutlineLeft  then e.barOutlineLeft:Remove()  end
+    if e.barOutlineRight then e.barOutlineRight:Remove() end
+    if e.barOutlineTop   then e.barOutlineTop:Remove()   end
+    if e.barOutlineBot   then e.barOutlineBot:Remove()   end
+    if e.ancestryConn    then e.ancestryConn:Disconnect() end
+    _active[model] = nil
 end
 
 local function GetBoundingBox(model)
@@ -78,25 +77,23 @@ local function GetBoundingBox(model)
            Vector2.new(math.round(maxX), math.round(maxY))
 end
 
-local function RemoveNpc(model)
-    local e = _active[model]
-    if not e then return end
-    RunService:UnbindFromRenderStep(e.renderName)
-    if e.nameText then e.nameText:Remove() end
-    if e.box      then for _, l in pairs(e.box) do l:Remove() end end
-    if e.ancestryConn then e.ancestryConn:Disconnect() end
-    _active[model] = nil
-end
-
 local function AddNpc(model)
     if _active[model] then return end
     local primary = model.PrimaryPart
         or model:FindFirstChild("HumanoidRootPart")
         or model:FindFirstChildWhichIsA("BasePart")
+    local humanoid = model:FindFirstChildOfClass("Humanoid")
     if not primary then return end
 
-    local nameText   = NewText(13, Color3.fromRGB(100, 220, 255))
-    local box        = NewBoxSet(Color3.fromRGB(100, 220, 255))
+    local color      = Color3.fromRGB(100, 220, 255)
+    local nameText   = NewText(13, color)
+    local hpText     = NewText(10, Color3.fromRGB(255,255,255))
+    local barFill    = NewLine(Color3.fromRGB(0,255,0), 1)
+    local barOL      = NewLine(Color3.fromRGB(0,0,0), 1)
+    local barOR      = NewLine(Color3.fromRGB(0,0,0), 1)
+    local barOT      = NewLine(Color3.fromRGB(0,0,0), 1)
+    local barOB      = NewLine(Color3.fromRGB(0,0,0), 1)
+    local smoothHp   = 1
     local renderName = "NpcESP_" .. model:GetDebugId()
 
     RunService:BindToRenderStep(renderName, Enum.RenderPriority.Camera.Value + 1, function()
@@ -110,7 +107,10 @@ local function AddNpc(model)
         local localHRP  = localChar and localChar:FindFirstChild("HumanoidRootPart")
         if not localHRP then
             nameText.Visible = false
-            SetBoxVisible(box, false)
+            hpText.Visible   = false
+            barFill.Visible  = false
+            barOL.Visible = false ; barOR.Visible = false
+            barOT.Visible = false ; barOB.Visible = false
             return
         end
 
@@ -119,54 +119,80 @@ local function AddNpc(model)
 
         if dist > maxDist then
             nameText.Visible = false
-            SetBoxVisible(box, false)
+            hpText.Visible   = false
+            barFill.Visible  = false
+            barOL.Visible = false ; barOR.Visible = false
+            barOT.Visible = false ; barOB.Visible = false
             return
         end
 
         local screenPos, onScreen = Camera:WorldToViewportPoint(primary.Position)
         if not onScreen then
             nameText.Visible = false
-            SetBoxVisible(box, false)
+            hpText.Visible   = false
+            barFill.Visible  = false
+            barOL.Visible = false ; barOR.Visible = false
+            barOT.Visible = false ; barOB.Visible = false
             return
         end
 
-        local color = (flags["NPC Color"] and flags["NPC Color"].Color) or Color3.fromRGB(100, 220, 255)
+        local npcColor = (flags["NPC Color"] and flags["NPC Color"].Color) or color
 
-        if flags["NPC Box"] then
-            local min, max = GetBoundingBox(model)
+        local min, max = GetBoundingBox(model)
+
+        if flags["NPC Name"] then
             if min and max then
-                DrawBox(box, min, max, color)
-
-                if flags["NPC Name"] then
-                    nameText.Size     = math.clamp(math.round((max.Y - min.Y) * 0.15), 10, 16)
-                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
-                    nameText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(min.Y - nameText.Size - 2))
-                    nameText.Color    = color
-                    nameText.Visible  = true
-                else
-                    nameText.Visible = false
-                end
+                local fontSize = math.clamp(math.round((max.Y - min.Y) * 0.15), 10, 16)
+                nameText.Size     = fontSize
+                nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                nameText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(min.Y - fontSize - 2))
+                nameText.Color    = npcColor
+                nameText.Visible  = true
             else
-                SetBoxVisible(box, false)
-                nameText.Visible = false
+                nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                nameText.Size     = 13
+                nameText.Position = Vector2.new(math.round(screenPos.X), math.round(screenPos.Y - 20))
+                nameText.Color    = npcColor
+                nameText.Visible  = true
             end
         else
-            SetBoxVisible(box, false)
+            nameText.Visible = false
+        end
 
-            if flags["NPC Name"] then
-                local screenPos2, onScreen2 = Camera:WorldToViewportPoint(primary.Position)
-                if onScreen2 then
-                    nameText.Size     = 13
-                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
-                    nameText.Position = Vector2.new(math.round(screenPos2.X), math.round(screenPos2.Y - 20))
-                    nameText.Color    = color
-                    nameText.Visible  = true
-                else
-                    nameText.Visible = false
-                end
+        if flags["NPC HP Bar"] and humanoid and min and max then
+            local hp    = humanoid.Health
+            local maxHp = math.max(humanoid.MaxHealth, 1)
+            local targetPct = hp / maxHp
+            smoothHp = smoothHp + (targetPct - smoothHp) * SMOOTH_SPEED
+            local pct    = math.clamp(smoothHp, 0, 1)
+            local top    = math.round(min.Y)
+            local bottom = math.round(max.Y)
+            local height = bottom - top
+            local barX   = math.round(min.X - BAR_GAP - 1)
+            local fillY  = math.round(bottom - height * pct)
+
+            barOL.From = Vector2.new(barX-1, top-1)   ; barOL.To = Vector2.new(barX-1, bottom+1) ; barOL.Visible = true
+            barOR.From = Vector2.new(barX+1, top-1)   ; barOR.To = Vector2.new(barX+1, bottom+1) ; barOR.Visible = true
+            barOT.From = Vector2.new(barX-1, top-1)   ; barOT.To = Vector2.new(barX+2, top-1)   ; barOT.Visible = true
+            barOB.From = Vector2.new(barX-1, bottom+1); barOB.To = Vector2.new(barX+2, bottom+1); barOB.Visible = true
+            barFill.From    = Vector2.new(barX, math.max(fillY, top))
+            barFill.To      = Vector2.new(barX, bottom+1)
+            barFill.Color   = HpToColor(pct)
+            barFill.Visible = pct > 0
+
+            if flags["NPC HP Text"] then
+                hpText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
+                hpText.Position = Vector2.new(barX, math.round(top + height/2 - 5))
+                hpText.Center   = true
+                hpText.Visible  = true
             else
-                nameText.Visible = false
+                hpText.Visible = false
             end
+        else
+            barFill.Visible = false
+            barOL.Visible = false ; barOR.Visible = false
+            barOT.Visible = false ; barOB.Visible = false
+            hpText.Visible = false
         end
     end)
 
@@ -174,7 +200,12 @@ local function AddNpc(model)
         if not parent then RemoveNpc(model) end
     end)
 
-    _active[model] = { nameText=nameText, box=box, renderName=renderName, ancestryConn=ancestryConn }
+    _active[model] = {
+        nameText=nameText, hpText=hpText,
+        barFill=barFill, barOutlineLeft=barOL, barOutlineRight=barOR,
+        barOutlineTop=barOT, barOutlineBot=barOB,
+        renderName=renderName, ancestryConn=ancestryConn
+    }
 end
 
 local _scanConn  = nil
