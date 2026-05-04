@@ -90,7 +90,8 @@ function VisualsTab.Init(Page, Visuals)
 
     local MobBoxToggle
     local MobNameToggle
-    local MobHealthToggle
+    local MobHpBarToggle
+    local MobHpTextToggle
     local MobDistSlider
 
     MobSection:Toggle({
@@ -100,7 +101,7 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function(Value)
             MobBoxToggle:SetVisiblity(Value)
             MobNameToggle:SetVisiblity(Value)
-            MobHealthToggle:SetVisiblity(Value)
+            MobHpBarToggle:SetVisiblity(Value)
             MobDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
@@ -127,11 +128,22 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function() Visuals:Update() end
     })
 
-    MobHealthToggle = MobSection:Toggle({
-        Name     = "Health",
-        Flag     = "Mob Health",
+    MobHpBarToggle = MobSection:Toggle({
+        Name     = "HP Bar",
+        Flag     = "Mob HP Bar",
         Sub      = true,
-        Default  = true,
+        Default  = false,
+        Callback = function(Value)
+            MobHpTextToggle:SetVisiblity(Value)
+            Visuals:Update()
+        end
+    })
+
+    MobHpTextToggle = MobSection:Toggle({
+        Name     = "HP Text",
+        Flag     = "Mob HP Text",
+        Sub      = true,
+        Default  = false,
         Callback = function() Visuals:Update() end
     })
 
@@ -148,7 +160,8 @@ function VisualsTab.Init(Page, Visuals)
 
     MobBoxToggle:SetVisiblity(false)
     MobNameToggle:SetVisiblity(false)
-    MobHealthToggle:SetVisiblity(false)
+    MobHpBarToggle:SetVisiblity(false)
+    MobHpTextToggle:SetVisiblity(false)
     MobDistSlider:SetVisibility(false)
 
     local MobDistToggle
