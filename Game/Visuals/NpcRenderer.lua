@@ -81,12 +81,16 @@ local _addedConn = nil
 local function ScanNpcs()
     local npcs = workspace:FindFirstChild("NPCs")
     if not npcs then return end
-    for _, child in ipairs(npcs:GetDescendants()) do
-        if child:IsA("Model") and not _active[child] then
-            local primary = child.PrimaryPart
-                or child:FindFirstChild("HumanoidRootPart")
-                or child:FindFirstChildWhichIsA("BasePart")
-            if primary then AddNpc(child) end
+    for _, folder in ipairs(npcs:GetChildren()) do
+        if folder:IsA("Folder") or folder:IsA("Model") then
+            for _, child in ipairs(folder:GetChildren()) do
+                if child:IsA("Model") and not _active[child] then
+                    local primary = child.PrimaryPart
+                        or child:FindFirstChild("HumanoidRootPart")
+                        or child:FindFirstChildWhichIsA("BasePart")
+                    if primary then AddNpc(child) end
+                end
+            end
         end
     end
 end
