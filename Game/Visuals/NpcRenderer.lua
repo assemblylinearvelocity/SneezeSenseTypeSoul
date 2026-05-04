@@ -82,7 +82,12 @@ local function ScanNpcs()
     local npcs = workspace:FindFirstChild("NPCs")
     if not npcs then return end
     for _, child in ipairs(npcs:GetDescendants()) do
-        if child:IsA("Model") then AddNpc(child) end
+        if child:IsA("Model") and not _active[child] then
+            local primary = child.PrimaryPart
+                or child:FindFirstChild("HumanoidRootPart")
+                or child:FindFirstChildWhichIsA("BasePart")
+            if primary then AddNpc(child) end
+        end
     end
 end
 
@@ -100,7 +105,7 @@ function NpcRenderer:Enable()
     if not _addedConn then
         local npcs = workspace:FindFirstChild("NPCs")
         if npcs then
-            _addedConn = npcs.ChildAdded:Connect(function(child)
+            _addedConn = npcs.DescendantAdded:Connect(function(child)
                 if child:IsA("Model") then task.wait(0.1) ; AddNpc(child) end
             end)
         end
