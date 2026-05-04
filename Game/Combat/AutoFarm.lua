@@ -48,9 +48,12 @@ local function HasActiveQuest()
 end
 
 local function EquipWeapon()
-    VIM:SendKeyEvent(true,  Enum.KeyCode.E, false, game)
+    pcall(function()
+        local entity = workspace.Entities:FindFirstChild(LocalPlayer.Name)
+        if not entity then return end
+        entity.CharacterHandler.Remotes.Weapon:FireServer()
+    end)
     task.wait(0.15)
-    VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
 end
 
 local function PressB()
@@ -60,9 +63,9 @@ local function PressB()
 end
 
 local function Attack()
-    VIM:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-    task.wait(0.05)
-    VIM:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+    pcall(function()
+        game:GetService("ReplicatedStorage").Remotes.ServerCombatHandler:FireServer("LightAttack")
+    end)
 end
 
 local function IsWeaponEquipped()
