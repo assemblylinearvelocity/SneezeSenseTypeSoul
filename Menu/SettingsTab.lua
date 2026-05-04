@@ -87,7 +87,9 @@ local function AttachHair(char, assetId, offset, rotation)
         pcall(function()
             head.Transparency = 1
             for _, v in ipairs(head:GetDescendants()) do
-                if v:IsA("Decal") then v.Transparency = 1 end
+                if v:IsA("Decal") or v:IsA("SpecialMesh") then
+                    v:Destroy()
+                end
             end
         end)
     end
@@ -194,14 +196,6 @@ function SettingsTab.Init(Page, Library, KeybindList, Watermark, DetachCallback)
         Name     = "Apply Morph",
         Callback = function()
             if _selectedMorph then ApplyMorph(_selectedMorph) end
-        end
-    })
-
-    FunSection:Button({
-        Name     = "Clear Morph",
-        Callback = function()
-            local char = game:GetService("Players").LocalPlayer.Character
-            if char then ClearMorph(char) end
         end
     })
 end
