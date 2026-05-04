@@ -1,6 +1,6 @@
 local MiscTab = {}
 
-function MiscTab:Init(Page, WorldModulation, Automation)
+function MiscTab:Init(Page, WorldModulation, Automation, Library)
     local WorldSection = Page:Section({ Name = "World", Side = 1 })
 
     WorldSection:Toggle({
@@ -56,13 +56,15 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Flag     = "Fly",
         Default  = false,
         Callback = function() Automation:Update() end
-    }):Keybind({
-        Name     = "Fly Bind",
+    })
+
+    AutomationSection:Label({ Name = "Fly Keybind", Alignment = "Left" }):Keybind({
+        Name     = "Fly Keybind",
         Flag     = "Fly Bind",
         Default  = Enum.KeyCode.Y,
         Mode     = "Toggle",
         Callback = function(Value)
-            if _G.Flags then _G.Flags["Fly"] = Value end
+            Library.Flags["Fly"] = Value
             Automation:Update()
         end
     })
@@ -70,9 +72,9 @@ function MiscTab:Init(Page, WorldModulation, Automation)
     AutomationSection:Slider({
         Name     = "Fly Speed",
         Flag     = "Fly Speed",
-        Min      = 0,
-        Max      = 1000,
-        Default  = 100,
+        Min      = 1,
+        Max      = 100,
+        Default  = 20,
         Decimals = 1,
         Compact  = true,
         Callback = function() Automation:Update() end
@@ -83,13 +85,15 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Flag     = "Speedhack",
         Default  = false,
         Callback = function() Automation:Update() end
-    }):Keybind({
-        Name     = "Speed Bind",
+    })
+
+    AutomationSection:Label({ Name = "Speed Keybind", Alignment = "Left" }):Keybind({
+        Name     = "Speed Keybind",
         Flag     = "Speed Bind",
         Default  = Enum.KeyCode.N,
         Mode     = "Toggle",
         Callback = function(Value)
-            if _G.Flags then _G.Flags["Speedhack"] = Value end
+            Library.Flags["Speedhack"] = Value
             Automation:Update()
         end
     })
@@ -97,9 +101,9 @@ function MiscTab:Init(Page, WorldModulation, Automation)
     AutomationSection:Slider({
         Name     = "Speed",
         Flag     = "Speed Value",
-        Min      = 0,
-        Max      = 1000,
-        Default  = 100,
+        Min      = 1,
+        Max      = 100,
+        Default  = 20,
         Decimals = 1,
         Compact  = true,
         Callback = function() Automation:Update() end
@@ -110,13 +114,15 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Flag     = "Noclip",
         Default  = false,
         Callback = function() Automation:Update() end
-    }):Keybind({
-        Name     = "Noclip Bind",
+    })
+
+    AutomationSection:Label({ Name = "Noclip Keybind", Alignment = "Left" }):Keybind({
+        Name     = "Noclip Keybind",
         Flag     = "Noclip Bind",
         Default  = Enum.KeyCode.Unknown,
         Mode     = "Toggle",
         Callback = function(Value)
-            if _G.Flags then _G.Flags["Noclip"] = Value end
+            Library.Flags["Noclip"] = Value
             Automation:Update()
         end
     })
@@ -126,13 +132,15 @@ function MiscTab:Init(Page, WorldModulation, Automation)
         Flag     = "Inf Jump",
         Default  = false,
         Callback = function() Automation:Update() end
-    }):Keybind({
-        Name     = "Inf Jump Bind",
+    })
+
+    AutomationSection:Label({ Name = "Inf Jump Keybind", Alignment = "Left" }):Keybind({
+        Name     = "Inf Jump Keybind",
         Flag     = "Inf Jump Bind",
         Default  = Enum.KeyCode.H,
         Mode     = "Toggle",
         Callback = function(Value)
-            if _G.Flags then _G.Flags["Inf Jump"] = Value end
+            Library.Flags["Inf Jump"] = Value
             Automation:Update()
         end
     })
@@ -140,8 +148,8 @@ function MiscTab:Init(Page, WorldModulation, Automation)
     AutomationSection:Slider({
         Name     = "Jump Height",
         Flag     = "Jump Power",
-        Min      = 0,
-        Max      = 1000,
+        Min      = 1,
+        Max      = 200,
         Default  = 50,
         Decimals = 1,
         Compact  = true,
