@@ -24,6 +24,8 @@ local function AddNpc(model)
     if _active[model] then return end
     if not model:IsA("Model") then return end
     local primary = model.PrimaryPart
+        or model:FindFirstChild("HumanoidRootPart")
+        or model:FindFirstChildWhichIsA("BasePart")
     if not primary then return end
 
     local flags    = GetFlags()
@@ -79,8 +81,8 @@ local _addedConn = nil
 local function ScanNpcs()
     local npcs = workspace:FindFirstChild("NPCs")
     if not npcs then return end
-    for _, child in ipairs(npcs:GetChildren()) do
-        if child:IsA("Model") and child.PrimaryPart then AddNpc(child) end
+    for _, child in ipairs(npcs:GetDescendants()) do
+        if child:IsA("Model") then AddNpc(child) end
     end
 end
 

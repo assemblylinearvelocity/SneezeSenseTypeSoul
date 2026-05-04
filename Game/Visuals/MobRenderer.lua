@@ -196,7 +196,7 @@ local function AddMob(model)
 
             if flags["Mob HP Text"] then
                 hpText.Text     = math.floor(hp) .. "/" .. math.floor(maxHp)
-                hpText.Position = Vector2.new(barX, math.round(top + height/2 - 5))
+                hpText.Position = Vector2.new(barX - 20, math.round(top + height/2 - 5))
                 hpText.Center   = true
                 hpText.Visible  = true
             else
