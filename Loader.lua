@@ -84,7 +84,7 @@ task.spawn(function()
         Automation:Init(Library)
         WorldModulation:Init(Library)
 
-        CombatTab.Init(CombatPage, AutoParry)
+        CombatTab.Init(CombatPage, AutoParry, AutoFarm)
         VisualsTab.Init(VisualsPage, Visuals)
         MiscTab:Init(MiscPage, WorldModulation, Automation, Library)
         SettingsTab.Init(SettingsPage, Library, KeybindList, Watermark, SneezeSense.detach)
