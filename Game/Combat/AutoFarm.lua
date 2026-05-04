@@ -20,7 +20,15 @@ end
 
 local function TeleportTo(pos)
     local hrp = GetHRP()
-    if hrp then hrp.CFrame = CFrame.new(pos) end
+    if not hrp then return end
+    hrp.CFrame = CFrame.new(pos)
+    -- Anchor briefly so server accepts the position
+    local bv = Instance.new("BodyVelocity")
+    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bv.Velocity = Vector3.zero
+    bv.Parent = hrp
+    task.wait(0.2)
+    bv:Destroy()
 end
 
 local function HasActiveQuest()
