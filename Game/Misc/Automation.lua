@@ -5,9 +5,14 @@ local RunService       = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer      = Players.LocalPlayer
 
+local _Library        = nil
 local _flyPos         = nil
 local _noclipConn     = nil
 local _infJumpRunning = false
+
+local function GetFlags()
+    return _Library and _Library.Flags or {}
+end
 
 local function GetCharacter()
     return LocalPlayer.Character
@@ -34,7 +39,7 @@ end
 
 local function StartFly()
     RunService:BindToRenderStep("SneezeFly", Enum.RenderPriority.Input.Value, function(dt)
-        local flags = _G.Flags or {}
+        local flags = GetFlags()
         if not flags["Fly"] then
             RunService:UnbindFromRenderStep("SneezeFly")
             _flyPos = nil
@@ -74,7 +79,7 @@ end
 local function StartNoclip()
     SetNoclip(true)
     _noclipConn = RunService.RenderStepped:Connect(function()
-        local flags = _G.Flags or {}
+        local flags = GetFlags()
         if not flags["Noclip"] then
             _noclipConn:Disconnect()
             _noclipConn = nil
@@ -95,7 +100,7 @@ end
 
 local function StartSpeedhack()
     RunService:BindToRenderStep("SneezeSpeed", Enum.RenderPriority.Input.Value + 1, function(dt)
-        local flags = _G.Flags or {}
+        local flags = GetFlags()
         if not flags["Speedhack"] then
             RunService:UnbindFromRenderStep("SneezeSpeed")
             return
@@ -122,7 +127,7 @@ local function StartInfJump()
     _infJumpRunning = true
     coroutine.wrap(function()
         while _infJumpRunning do
-            local flags = _G.Flags or {}
+            local flags = GetFlags()
             if not flags["Inf Jump"] then
                 _infJumpRunning = false
                 break
@@ -146,8 +151,12 @@ local function StopInfJump()
     _infJumpRunning = false
 end
 
+function Automation:Init(Library)
+    _Library = Library
+end
+
 function Automation:Update()
-    local flags = _G.Flags or {}
+    local flags = GetFlags()
     if flags["Fly"]       then StartFly()                                else StopFly()       end
     if flags["Speedhack"] then StartSpeedhack()                          else StopSpeedhack() end
     if flags["Noclip"]    then if not _noclipConn then StartNoclip() end else StopNoclip()    end

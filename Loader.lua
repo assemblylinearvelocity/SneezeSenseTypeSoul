@@ -81,6 +81,8 @@ task.spawn(function()
         local SettingsPage = Window:Page({ Name = "Settings", Columns = 2, Subtabs = false })
 
         Visuals:Init(Library, EspRenderer, MobRenderer, NpcRenderer)
+        Automation:Init(Library)
+        WorldModulation:Init(Library)
 
         CombatTab.Init(CombatPage, AutoParry)
         VisualsTab.Init(VisualsPage, Visuals)

@@ -1,19 +1,24 @@
 local WorldModulation = {}
 
-local Lighting  = game:GetService("Lighting")
+local Lighting   = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 
+local _Library    = nil
 local _connection = nil
 local _originals  = {}
 
+local function GetFlags()
+    return _Library and _Library.Flags or {}
+end
+
 local function SaveOriginals()
     if _originals.saved then return end
-    _originals.ClockTime       = Lighting.ClockTime
-    _originals.FogEnd          = Lighting.FogEnd
-    _originals.Brightness      = Lighting.Brightness
-    _originals.GlobalShadows   = Lighting.GlobalShadows
-    _originals.OutdoorAmbient  = Lighting.OutdoorAmbient
-    _originals.saved           = true
+    _originals.ClockTime      = Lighting.ClockTime
+    _originals.FogEnd         = Lighting.FogEnd
+    _originals.Brightness     = Lighting.Brightness
+    _originals.GlobalShadows  = Lighting.GlobalShadows
+    _originals.OutdoorAmbient = Lighting.OutdoorAmbient
+    _originals.saved          = true
 end
 
 local function RestoreOriginals()
@@ -27,14 +32,14 @@ local function RestoreOriginals()
 end
 
 local function AnyFeatureOn()
-    local flags = _G.Flags or {}
+    local flags = GetFlags()
     return flags["Time Change"] or flags["No Fog"] or flags["Fullbright"]
 end
 
 local function StartLoop()
     if _connection then return end
     _connection = RunService.Heartbeat:Connect(function()
-        local flags = _G.Flags or {}
+        local flags = GetFlags()
 
         if flags["Time Change"] then
             local target = flags["Time Value"] or 14
@@ -65,6 +70,10 @@ local function StopLoop()
         _connection:Disconnect()
         _connection = nil
     end
+end
+
+function WorldModulation:Init(Library)
+    _Library = Library
 end
 
 function WorldModulation:Update()
