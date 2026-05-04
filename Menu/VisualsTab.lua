@@ -192,8 +192,8 @@ function VisualsTab.Init(Page, Visuals)
     local NpcSection = Page:Section({ Name = "NPC ESP", Side = 2 })
 
     local NpcNameToggle
-    local NpcHpBarToggle
-    local NpcHpTextToggle
+    local NpcDistToggle
+    local NpcDistUnitDropdown
     local NpcDistSlider
 
     NpcSection:Toggle({
@@ -202,7 +202,7 @@ function VisualsTab.Init(Page, Visuals)
         Default  = false,
         Callback = function(Value)
             NpcNameToggle:SetVisiblity(Value)
-            NpcHpBarToggle:SetVisiblity(Value)
+            NpcDistToggle:SetVisiblity(Value)
             NpcDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
@@ -221,46 +221,8 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function() Visuals:Update() end
     })
 
-    NpcHpBarToggle = NpcSection:Toggle({
-        Name     = "HP Bar",
-        Flag     = "NPC HP Bar",
-        Sub      = true,
-        Default  = false,
-        Callback = function(Value)
-            NpcHpTextToggle:SetVisiblity(Value)
-            Visuals:Update()
-        end
-    })
-
-    NpcHpTextToggle = NpcSection:Toggle({
-        Name     = "HP Text",
-        Flag     = "NPC HP Text",
-        Sub      = true,
-        Default  = false,
-        Callback = function() Visuals:Update() end
-    })
-
-    NpcDistSlider = NpcSection:Slider({
-        Name     = "Distance",
-        Flag     = "NPC ESP Distance",
-        Min      = 50,
-        Max      = 2000,
-        Default  = 500,
-        Decimals = 1,
-        Compact  = true,
-        Callback = function() Visuals:Update() end
-    })
-
-    NpcNameToggle:SetVisiblity(false)
-    NpcHpBarToggle:SetVisiblity(false)
-    NpcHpTextToggle:SetVisiblity(false)
-    NpcDistSlider:SetVisibility(false)
-
-    local NpcDistToggle
-    local NpcDistUnitDropdown
-
     NpcDistToggle = NpcSection:Toggle({
-        Name     = "Show Distance",
+        Name     = "Distance",
         Flag     = "NPC Distance",
         Sub      = true,
         Default  = false,
@@ -278,8 +240,21 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function() Visuals:Update() end
     })
 
+    NpcDistSlider = NpcSection:Slider({
+        Name     = "Max Distance",
+        Flag     = "NPC ESP Distance",
+        Min      = 50,
+        Max      = 2000,
+        Default  = 500,
+        Decimals = 1,
+        Compact  = true,
+        Callback = function() Visuals:Update() end
+    })
+
+    NpcNameToggle:SetVisiblity(false)
     NpcDistToggle:SetVisiblity(false)
     NpcDistUnitDropdown:SetVisibility(false)
+    NpcDistSlider:SetVisibility(false)
 
     local CameraSection = Page:Section({ Name = "Camera", Side = 2 })
 
