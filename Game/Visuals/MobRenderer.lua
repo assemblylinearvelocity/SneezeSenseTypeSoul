@@ -111,6 +111,7 @@ local function AddMob(model)
     local hrp      = model:FindFirstChild("HumanoidRootPart")
     local humanoid = model:FindFirstChildOfClass("Humanoid")
     if not hrp or not humanoid then return end
+    if humanoid.Health <= 0 then return end
 
     local nameText = NewText(13, Color3.fromRGB(255, 200, 100))
     local hpText   = NewText(10, Color3.fromRGB(255, 255, 255))
@@ -144,6 +145,8 @@ local function AddMob(model)
         local localChar = Players.LocalPlayer.Character
         local localHRP  = localChar and localChar:FindFirstChild("HumanoidRootPart")
         if not localHRP then HideAll() return end
+
+        if humanoid.Health <= 0 then HideAll() return end
 
         local dist    = (hrp.Position - localHRP.Position).Magnitude
         local maxDist = flags["Mob ESP Distance"] or 500
