@@ -2,6 +2,8 @@ local AutoFarm = {}
 
 local Players           = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService  = game:GetService("UserInputService")
+local VIM               = game:GetService("VirtualInputManager")
 local LocalPlayer       = Players.LocalPlayer
 
 local _Library = nil
@@ -32,6 +34,12 @@ local function Attack()
             :WaitForChild("ServerCombatHandler")
             :FireServer("LightAttack")
     end)
+end
+
+local function PressB()
+    VIM:SendKeyEvent(true,  Enum.KeyCode.B, false, game)
+    task.wait(0.1)
+    VIM:SendKeyEvent(false, Enum.KeyCode.B, false, game)
 end
 
 local function GetNearestMissionNPC()
@@ -79,29 +87,38 @@ local function AcceptQuest()
     task.wait(1)
 end
 
-local function GetNearestMob(mobName)
+local function GetNearestTarget()
     local hrp = GetHRP()
-    if not hrp then return nil end
+    if not hrp then return nil, nil end
     local entities = workspace:FindFirstChild("Entities")
-    if not entities then return nil end
-    local nearest, nearestDist = nil, math.huge
+    if not entities then return nil, nil end
+
+    local nearestAlive,   aliveD   = nil, math.huge
+    local nearestDowned,  downedD  = nil, math.huge
+
     for _, child in ipairs(entities:GetChildren()) do
-        if child:IsA("Model") then
-            local name = child.Name:match("^([^_]+)") or child.Name
-            if name:lower() == mobName:lower() then
-                local hum = child:FindFirstChildOfClass("Humanoid")
-                local mobHRP = child:FindFirstChild("HumanoidRootPart")
-                if hum and hum.Health > 0 and mobHRP then
-                    local dist = (hrp.Position - mobHRP.Position).Magnitude
-                    if dist < nearestDist then
-                        nearest = child
-                        nearestDist = dist
+        if child:IsA("Model") and not Players:GetPlayerFromCharacter(child) then
+            local hum    = child:FindFirstChildOfClass("Humanoid")
+            local mobHRP = child:FindFirstChild("HumanoidRootPart")
+            if hum and mobHRP then
+                local dist  = (hrp.Position - mobHRP.Position).Magnitude
+                local state = child:GetAttribute("CurrentState")
+                if state == "Unconscious" then
+                    if dist < downedD then
+                        nearestDowned = child
+                        downedD = dist
+                    end
+                elseif hum.Health > 0 then
+                    if dist < aliveD then
+                        nearestAlive = child
+                        aliveD = dist
                     end
                 end
             end
         end
     end
-    return nearest
+
+    return nearestAlive, nearestDowned
 end
 
 local function FarmLoop()
@@ -109,15 +126,22 @@ local function FarmLoop()
         local flags = GetFlags()
         if not flags["Mission Farm"] then break end
 
-        local mobName = flags["Farm Mob"] or "Shinigami"
-
         if not HasActiveQuest() then
             AcceptQuest()
         end
 
-        local mob = GetNearestMob(mobName)
-        if mob then
-            local mobHRP = mob:FindFirstChild("HumanoidRootPart")
+        local alive, downed = GetNearestTarget()
+
+        if downed then
+            local mobHRP = downed:FindFirstChild("HumanoidRootPart")
+            if mobHRP then
+                TeleportTo(mobHRP.Position + Vector3.new(0, -1, 0))
+                task.wait(0.1)
+                PressB()
+                task.wait(0.3)
+            end
+        elseif alive then
+            local mobHRP = alive:FindFirstChild("HumanoidRootPart")
             if mobHRP then
                 TeleportTo(mobHRP.Position + Vector3.new(0, -2, 0))
                 task.wait(0.05)

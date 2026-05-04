@@ -11,14 +11,6 @@ function CombatTab.Init(Page, AutoParry, AutoFarm)
             AutoFarm:Update()
         end
     })
-
-    FarmSection:Dropdown({
-        Name     = "Mob Type",
-        Flag     = "Farm Mob",
-        Default  = "Shinigami",
-        Items    = { "Shinigami", "Frisker", "Fishbone", "Hollow", "Adjuchas" },
-        Callback = function() end
-    })
 end
 
 return CombatTab
