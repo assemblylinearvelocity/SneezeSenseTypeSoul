@@ -46,6 +46,19 @@ local function ClearMorph(char)
             end
         end)
     end
+    pcall(function()
+        local effects = workspace:FindFirstChild("Effects")
+        if effects then
+            local playerEffects = effects:FindFirstChild(game:GetService("Players").LocalPlayer.Name)
+            if playerEffects then
+                for _, v in ipairs(playerEffects:GetChildren()) do
+                    if string.find(v.Name, "Head") or string.find(v.Name, "Face") then
+                        v:Destroy()
+                    end
+                end
+            end
+        end
+    end)
     for _, v in ipairs(char:GetChildren()) do
         if v:IsA("Accessory") or v:IsA("Hat") then pcall(function() v:Destroy() end) end
         if v:IsA("Shirt") or v:IsA("Pants") then pcall(function() v:Destroy() end) end
@@ -87,9 +100,7 @@ local function AttachHair(char, assetId, offset, rotation)
         pcall(function()
             head.Transparency = 1
             for _, v in ipairs(head:GetDescendants()) do
-                if v:IsA("Decal") or v:IsA("SpecialMesh") then
-                    v:Destroy()
-                end
+                pcall(function() v:Destroy() end)
             end
         end)
     end
@@ -131,6 +142,21 @@ local function ApplyMorph(name)
     if data.skin then SetSkin(char, data.skin) end
     if data.hair then AttachHair(char, data.hair, data.off, data.rot) end
     if data.shirt or data.pants then AttachClothing(char, data.shirt, data.pants) end
+
+    local head = char:FindFirstChild("Head")
+    if head then
+        task.spawn(function()
+            for _ = 1, 20 do
+                task.wait(0.1)
+                pcall(function()
+                    head.Transparency = 1
+                    for _, v in ipairs(head:GetDescendants()) do
+                        pcall(function() v:Destroy() end)
+                    end
+                end)
+            end
+        end)
+    end
 end
 
 function SettingsTab.Init(Page, Library, KeybindList, Watermark, DetachCallback)
