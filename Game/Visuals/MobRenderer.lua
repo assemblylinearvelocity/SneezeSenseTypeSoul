@@ -142,7 +142,7 @@ local function AddMob(model)
                 DrawBox(box, min, max, color)
 
                 if flags["Mob Name"] then
-                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                    nameText.Text     = model.Name
                     nameText.Size     = math.clamp(math.round((max.Y - min.Y) * 0.15), 10, 16)
                     nameText.Position = Vector2.new(math.round((min.X + max.X) / 2), math.round(min.Y - nameText.Size - 2))
                     nameText.Color    = color
@@ -176,7 +176,7 @@ local function AddMob(model)
             if flags["Mob Name"] then
                 local screenPos2, onScreen2 = Camera:WorldToViewportPoint(hrp.Position)
                 if onScreen2 then
-                    nameText.Text     = string.format("%s [%.0fm]", model.Name, dist)
+                    nameText.Text     = model.Name
                     nameText.Size     = 13
                     nameText.Position = Vector2.new(math.round(screenPos2.X), math.round(screenPos2.Y - 20))
                     nameText.Color    = color
