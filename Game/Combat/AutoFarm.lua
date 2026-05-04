@@ -50,26 +50,6 @@ local function HasActiveQuest()
 end
 
 local function EquipWeapon()
-    VIM:SendKeyEvent(true,  Enum.KeyCode.E, false, game)
-    task.wait(0.1)
-    VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-end
-
-local function PressB()
-    VIM:SendKeyEvent(true,  Enum.KeyCode.B, false, game)
-    task.wait(0.1)
-    VIM:SendKeyEvent(false, Enum.KeyCode.B, false, game)
-end
-
-local function Attack()
-    pcall(function()
-        ReplicatedStorage:WaitForChild("Remotes")
-            :WaitForChild("ServerCombatHandler")
-            :FireServer("LightAttack")
-    end)
-end
-
-local function EquipWeapon()
     pcall(function()
         local char = LocalPlayer.Character
         if not char then return end
@@ -89,15 +69,25 @@ local function EquipWeapon()
     VIM:SendKeyEvent(false, Enum.KeyCode.E, false, game)
 end
 
+local function PressB()
+    VIM:SendKeyEvent(true,  Enum.KeyCode.B, false, game)
+    task.wait(0.1)
+    VIM:SendKeyEvent(false, Enum.KeyCode.B, false, game)
+end
+
+local function Attack()
+    pcall(function()
+        ReplicatedStorage:WaitForChild("Remotes")
+            :WaitForChild("ServerCombatHandler")
+            :FireServer("LightAttack")
+    end)
+end
+
 local function IsWeaponEquipped()
     local char = LocalPlayer.Character
     if not char then return false end
     return char:FindFirstChild("Zanpakuto") ~= nil
         or char:FindFirstChildWhichIsA("Tool") ~= nil
-end
-    VIM:SendKeyEvent(true,  Enum.KeyCode.B, false, game)
-    task.wait(0.1)
-    VIM:SendKeyEvent(false, Enum.KeyCode.B, false, game)
 end
 
 local function GetNearestMissionNPC()
@@ -147,8 +137,6 @@ end
 
 local FARM_RANGE  = 150
 local GRIP_RANGE  = 20
-
--- Tracks mobs we have attacked so we only grip our own kills
 local _attackedMobs = {}
 
 local function GetNearestTarget()
