@@ -69,10 +69,11 @@ local function Attack()
 end
 
 local function IsWeaponEquipped()
-    local char = LocalPlayer.Character
-    if not char then return false end
-    return char:FindFirstChild("Zanpakuto") ~= nil
-        or char:FindFirstChildWhichIsA("Tool") ~= nil
+    local entity = workspace.Entities:FindFirstChild(LocalPlayer.Name)
+    if not entity then return false end
+    local zanpakuto = entity:FindFirstChild("Zanpakuto")
+    if not zanpakuto then return false end
+    return zanpakuto.Parent == entity
 end
 
 local function GetNearestMissionNPC()
