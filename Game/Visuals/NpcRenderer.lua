@@ -78,11 +78,13 @@ end
 local _scanConn  = nil
 local _addedConn = nil
 
+local NPC_FOLDER_BLACKLIST = { Clothes = true, AccessoryNPC = true }
+
 local function ScanNpcs()
     local npcs = workspace:FindFirstChild("NPCs")
     if not npcs then return end
     for _, folder in ipairs(npcs:GetChildren()) do
-        if folder:IsA("Folder") or folder:IsA("Model") then
+        if not NPC_FOLDER_BLACKLIST[folder.Name] and (folder:IsA("Folder") or folder:IsA("Model")) then
             for _, child in ipairs(folder:GetChildren()) do
                 if child:IsA("Model") and not _active[child] then
                     local primary = child.PrimaryPart
