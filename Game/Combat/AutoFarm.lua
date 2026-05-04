@@ -90,6 +90,9 @@ end
 local FARM_RANGE  = 150
 local GRIP_RANGE  = 20
 
+-- Tracks mobs we have attacked so we only grip our own kills
+local _attackedMobs = {}
+
 local function GetNearestTarget()
     local hrp = GetHRP()
     if not hrp then return nil, nil end
@@ -106,10 +109,15 @@ local function GetNearestTarget()
             if hum and mobHRP then
                 local dist  = (hrp.Position - mobHRP.Position).Magnitude
                 local state = child:GetAttribute("CurrentState")
-                if state == "Unconscious" and dist <= GRIP_RANGE then
-                    if dist < downedD then
-                        nearestDowned = child
-                        downedD = dist
+
+                if state == "Unconscious" then
+                    -- Only grip mobs we attacked, and only if they're close enough
+                    -- (don't teleport across the map to grip random downed mobs)
+                    if _attackedMobs[child] and dist <= GRIP_RANGE then
+                        if dist < downedD then
+                            nearestDowned = child
+                            downedD = dist
+                        end
                     end
                 elseif hum.Health > 0 and dist <= FARM_RANGE then
                     if dist < aliveD then
@@ -125,6 +133,9 @@ local function GetNearestTarget()
 end
 
 local function FarmLoop()
+    -- Clear the attacked-mob registry each new farm session
+    _attackedMobs = {}
+
     while _running do
         local flags = GetFlags()
         if not flags["Mission Farm"] then break end
@@ -133,6 +144,13 @@ local function FarmLoop()
             AcceptQuest()
             task.wait(1)
             continue
+        end
+
+        -- Prune mobs that have been removed from the workspace (already gripped/dead)
+        for mob in pairs(_attackedMobs) do
+            if not mob.Parent then
+                _attackedMobs[mob] = nil
+            end
         end
 
         local alive, downed = GetNearestTarget()
@@ -144,10 +162,14 @@ local function FarmLoop()
                 task.wait(0.1)
                 PressB()
                 task.wait(0.3)
+                -- Remove from registry after gripping
+                _attackedMobs[downed] = nil
             end
         elseif alive then
             local mobHRP = alive:FindFirstChild("HumanoidRootPart")
             if mobHRP then
+                -- Register this mob as one we are attacking
+                _attackedMobs[alive] = true
                 TeleportTo(mobHRP.Position + Vector3.new(0, -2, 0))
                 task.wait(0.05)
                 Attack()
@@ -177,6 +199,7 @@ end
 
 function AutoFarm:Unload()
     _running = false
+    _attackedMobs = {}
 end
 
 return AutoFarm
