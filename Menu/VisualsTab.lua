@@ -275,35 +275,6 @@ function VisualsTab.Init(Page, Visuals)
         Compact  = true,
         Callback = function() Visuals:Update() end
     })
-
-    CameraSection:Toggle({
-        Name     = "Freecam",
-        Flag     = "Freecam",
-        Default  = false,
-        Callback = function() Visuals:Update() end
-    })
-
-    CameraSection:Slider({
-        Name     = "Freecam Speed",
-        Flag     = "Freecam Speed",
-        Min      = 0.1,
-        Max      = 10,
-        Default  = 0.5,
-        Decimals = 0.1,
-        Compact  = true,
-        Callback = function() Visuals:Update() end
-    })
-
-    CameraSection:Slider({
-        Name     = "Freecam Sens",
-        Flag     = "Freecam Sens",
-        Min      = 0.1,
-        Max      = 5,
-        Default  = 0.3,
-        Decimals = 0.1,
-        Compact  = true,
-        Callback = function() Visuals:Update() end
-    })
 end
 
 return VisualsTab

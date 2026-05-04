@@ -74,7 +74,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Name     = "Fly Speed",
         Flag     = "Fly Speed",
         Min      = 1,
-        Max      = 100,
+        Max      = 200,
         Default  = 20,
         Decimals = 1,
         Compact  = true,
@@ -104,23 +104,25 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Name     = "Speed",
         Flag     = "Speed Value",
         Min      = 1,
-        Max      = 100,
+        Max      = 200,
         Default  = 20,
         Decimals = 1,
         Compact  = true,
         Callback = function() end
     })
 
-    local InfJumpToggle
-    local NoclipToggle
+    local _mutexLock = false
 
     NoclipToggle = AutomationSection:Toggle({
         Name     = "Noclip",
         Flag     = "Noclip",
         Default  = false,
         Callback = function(Value)
-            if Value and InfJumpToggle then
+            if _mutexLock then return end
+            if Value and InfJumpToggle and Library.Flags["Inf Jump"] then
+                _mutexLock = true
                 InfJumpToggle:Set(false)
+                _mutexLock = false
             end
             Automation:Update()
         end
@@ -134,7 +136,6 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Callback = function(Value)
             local flag = Library.Flags["Noclip Bind"]
             if not flag or not flag.Key or flag.Key == "Enum.KeyCode.Unknown" or flag.Key == "Enum.KeyCode.Backspace" then return end
-            if Value and InfJumpToggle then InfJumpToggle:Set(false) end
             NoclipToggle:Set(Value)
         end
     })
@@ -144,8 +145,11 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Flag     = "Inf Jump",
         Default  = false,
         Callback = function(Value)
-            if Value and NoclipToggle then
+            if _mutexLock then return end
+            if Value and NoclipToggle and Library.Flags["Noclip"] then
+                _mutexLock = true
                 NoclipToggle:Set(false)
+                _mutexLock = false
             end
             Automation:Update()
         end
@@ -159,7 +163,6 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Callback = function(Value)
             local flag = Library.Flags["Inf Jump Bind"]
             if not flag or not flag.Key or flag.Key == "Enum.KeyCode.Unknown" or flag.Key == "Enum.KeyCode.Backspace" then return end
-            if Value and NoclipToggle then NoclipToggle:Set(false) end
             InfJumpToggle:Set(Value)
         end
     })
