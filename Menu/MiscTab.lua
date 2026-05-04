@@ -51,7 +51,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
 
     local AutomationSection = Page:Section({ Name = "Automation", Side = 2 })
 
-    AutomationSection:Toggle({
+    local FlyToggle = AutomationSection:Toggle({
         Name     = "Fly",
         Flag     = "Fly",
         Default  = false,
@@ -64,8 +64,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = Enum.KeyCode.Y,
         Mode     = "Toggle",
         Callback = function(Value)
-            Library.Flags["Fly"] = Value
-            Automation:Update()
+            FlyToggle:Set(Value)
         end
     })
 
@@ -77,10 +76,10 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = 20,
         Decimals = 1,
         Compact  = true,
-        Callback = function() Automation:Update() end
+        Callback = function() end
     })
 
-    AutomationSection:Toggle({
+    local SpeedToggle = AutomationSection:Toggle({
         Name     = "Speedhack",
         Flag     = "Speedhack",
         Default  = false,
@@ -93,8 +92,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = Enum.KeyCode.N,
         Mode     = "Toggle",
         Callback = function(Value)
-            Library.Flags["Speedhack"] = Value
-            Automation:Update()
+            SpeedToggle:Set(Value)
         end
     })
 
@@ -106,10 +104,10 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = 20,
         Decimals = 1,
         Compact  = true,
-        Callback = function() Automation:Update() end
+        Callback = function() end
     })
 
-    AutomationSection:Toggle({
+    local NoclipToggle = AutomationSection:Toggle({
         Name     = "Noclip",
         Flag     = "Noclip",
         Default  = false,
@@ -122,12 +120,11 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = Enum.KeyCode.Unknown,
         Mode     = "Toggle",
         Callback = function(Value)
-            Library.Flags["Noclip"] = Value
-            Automation:Update()
+            NoclipToggle:Set(Value)
         end
     })
 
-    AutomationSection:Toggle({
+    local InfJumpToggle = AutomationSection:Toggle({
         Name     = "Inf Jump",
         Flag     = "Inf Jump",
         Default  = false,
@@ -140,8 +137,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = Enum.KeyCode.H,
         Mode     = "Toggle",
         Callback = function(Value)
-            Library.Flags["Inf Jump"] = Value
-            Automation:Update()
+            InfJumpToggle:Set(Value)
         end
     })
 
@@ -153,7 +149,7 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
         Default  = 50,
         Decimals = 1,
         Compact  = true,
-        Callback = function() Automation:Update() end
+        Callback = function() end
     })
 end
 
