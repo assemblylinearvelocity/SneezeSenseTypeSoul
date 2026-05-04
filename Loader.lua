@@ -31,7 +31,7 @@ task.spawn(function()
     local EspRenderer = loadModule("Game/Visuals/EspRenderer.lua")
     if not EspRenderer then return warn("Failed to load EspRenderer") end
 
-    local MobRenderer = loadModule("Game/Visuals/MobRenderer.lua")
+    local MobRenderer = loadModule("Game/Visuals/MobRenderer.lua?v=2")
     if not MobRenderer then return warn("Failed to load MobRenderer") end
 
     local NpcRenderer = loadModule("Game/Visuals/NpcRenderer.lua")
