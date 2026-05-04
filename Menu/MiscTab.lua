@@ -61,9 +61,11 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
     AutomationSection:Label({ Name = "Fly Keybind", Alignment = "Left" }):Keybind({
         Name     = "Fly Keybind",
         Flag     = "Fly Bind",
-        Default  = Enum.KeyCode.Unknown,
+        Default  = Enum.KeyCode.Backspace,
         Mode     = "Toggle",
         Callback = function(Value)
+            local flag = Library.Flags["Fly Bind"]
+            if not flag or not flag.Key or flag.Key == "Enum.KeyCode.Unknown" or flag.Key == "Enum.KeyCode.Backspace" then return end
             FlyToggle:Set(Value)
         end
     })
@@ -89,9 +91,11 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
     AutomationSection:Label({ Name = "Speed Keybind", Alignment = "Left" }):Keybind({
         Name     = "Speed Keybind",
         Flag     = "Speed Bind",
-        Default  = Enum.KeyCode.Unknown,
+        Default  = Enum.KeyCode.Backspace,
         Mode     = "Toggle",
         Callback = function(Value)
+            local flag = Library.Flags["Speed Bind"]
+            if not flag or not flag.Key or flag.Key == "Enum.KeyCode.Unknown" or flag.Key == "Enum.KeyCode.Backspace" then return end
             SpeedToggle:Set(Value)
         end
     })
@@ -125,12 +129,12 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
     AutomationSection:Label({ Name = "Noclip Keybind", Alignment = "Left" }):Keybind({
         Name     = "Noclip Keybind",
         Flag     = "Noclip Bind",
-        Default  = Enum.KeyCode.Unknown,
+        Default  = Enum.KeyCode.Backspace,
         Mode     = "Toggle",
         Callback = function(Value)
-            if Value and InfJumpToggle then
-                InfJumpToggle:Set(false)
-            end
+            local flag = Library.Flags["Noclip Bind"]
+            if not flag or not flag.Key or flag.Key == "Enum.KeyCode.Unknown" or flag.Key == "Enum.KeyCode.Backspace" then return end
+            if Value and InfJumpToggle then InfJumpToggle:Set(false) end
             NoclipToggle:Set(Value)
         end
     })
@@ -150,12 +154,12 @@ function MiscTab:Init(Page, WorldModulation, Automation, Library)
     AutomationSection:Label({ Name = "Inf Jump Keybind", Alignment = "Left" }):Keybind({
         Name     = "Inf Jump Keybind",
         Flag     = "Inf Jump Bind",
-        Default  = Enum.KeyCode.Unknown,
+        Default  = Enum.KeyCode.Backspace,
         Mode     = "Toggle",
         Callback = function(Value)
-            if Value and NoclipToggle then
-                NoclipToggle:Set(false)
-            end
+            local flag = Library.Flags["Inf Jump Bind"]
+            if not flag or not flag.Key or flag.Key == "Enum.KeyCode.Unknown" or flag.Key == "Enum.KeyCode.Backspace" then return end
+            if Value and NoclipToggle then NoclipToggle:Set(false) end
             InfJumpToggle:Set(Value)
         end
     })
