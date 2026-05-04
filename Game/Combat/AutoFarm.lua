@@ -135,7 +135,7 @@ local function AcceptQuest()
     task.wait(1)
 end
 
-local FARM_RANGE  = 150
+local FARM_RANGE  = 200
 local GRIP_RANGE  = 20
 local _attackedMobs = {}
 
@@ -214,7 +214,7 @@ local function FarmLoop()
         if downed then
             local mobHRP = downed:FindFirstChild("HumanoidRootPart")
             if mobHRP then
-                TeleportTo(mobHRP.Position + Vector3.new(0, -5, 0))
+                TeleportTo(mobHRP.Position + Vector3.new(0, 0, 0))
                 task.wait(0.1)
                 PressB()
                 task.wait(0.3)
@@ -225,7 +225,7 @@ local function FarmLoop()
             if mobHRP then
                 _attackedMobs[alive] = true
                 -- Position below the mob so we don't take damage
-                TeleportTo(mobHRP.Position + Vector3.new(0, -5, 0))
+                TeleportTo(mobHRP.Position + Vector3.new(0, 0, 0))
                 task.wait(0.05)
                 Attack()
             end
