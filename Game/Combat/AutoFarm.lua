@@ -51,7 +51,7 @@ local function EquipWeapon()
     pcall(function()
         local entity = workspace.Entities:FindFirstChild(LocalPlayer.Name)
         if not entity then return end
-        entity.CharacterHandler.Remotes.Weapon:FireServer()
+        entity.CharacterHandler.Remotes.Weapon:FireServer("UnsheathWeapon")
     end)
     task.wait(0.15)
 end
@@ -71,9 +71,11 @@ end
 local function IsWeaponEquipped()
     local entity = workspace.Entities:FindFirstChild(LocalPlayer.Name)
     if not entity then return false end
-    local zanpakuto = entity:FindFirstChild("Zanpakuto")
+    local zanpakuto = entity:FindFirstChild("Zanpakuto", true)
     if not zanpakuto then return false end
-    return zanpakuto.Parent == entity
+    local rightArm = entity:FindFirstChild("Right Arm") or entity:FindFirstChild("RightHand")
+    if rightArm and zanpakuto.Parent == rightArm then return false end
+    return true
 end
 
 local function GetNearestMissionNPC()
