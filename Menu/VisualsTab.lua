@@ -191,9 +191,6 @@ function VisualsTab.Init(Page, Visuals)
 
     local NpcSection = Page:Section({ Name = "NPC ESP", Side = 2 })
 
-    local NpcNameToggle
-    local NpcDistToggle
-    local NpcDistUnitDropdown
     local NpcDistSlider
 
     NpcSection:Toggle({
@@ -201,8 +198,6 @@ function VisualsTab.Init(Page, Visuals)
         Flag     = "NPC ESP",
         Default  = false,
         Callback = function(Value)
-            NpcNameToggle:SetVisiblity(Value)
-            NpcDistToggle:SetVisiblity(Value)
             NpcDistSlider:SetVisibility(Value)
             Visuals:Update()
         end
@@ -213,47 +208,17 @@ function VisualsTab.Init(Page, Visuals)
         Callback = function() Visuals:Update() end
     })
 
-    NpcNameToggle = NpcSection:Toggle({
-        Name     = "Name",
-        Flag     = "NPC Name",
-        Sub      = true,
-        Default  = true,
-        Callback = function() Visuals:Update() end
-    })
-
-    NpcDistToggle = NpcSection:Toggle({
-        Name     = "Distance",
-        Flag     = "NPC Distance",
-        Sub      = true,
-        Default  = false,
-        Callback = function(Value)
-            NpcDistUnitDropdown:SetVisibility(Value)
-            Visuals:Update()
-        end
-    })
-
-    NpcDistUnitDropdown = NpcSection:Dropdown({
-        Name     = "Unit",
-        Flag     = "NPC Distance Unit",
-        Default  = "studs",
-        Items    = { "studs", "m" },
-        Callback = function() Visuals:Update() end
-    })
-
     NpcDistSlider = NpcSection:Slider({
         Name     = "Max Distance",
         Flag     = "NPC ESP Distance",
         Min      = 50,
-        Max      = 2000,
-        Default  = 500,
+        Max      = 5000,
+        Default  = 1000,
         Decimals = 1,
         Compact  = true,
         Callback = function() Visuals:Update() end
     })
 
-    NpcNameToggle:SetVisiblity(false)
-    NpcDistToggle:SetVisiblity(false)
-    NpcDistUnitDropdown:SetVisibility(false)
     NpcDistSlider:SetVisibility(false)
 
     local CameraSection = Page:Section({ Name = "Camera", Side = 2 })

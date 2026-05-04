@@ -11,100 +11,66 @@ local function GetFlags()
     return _Library and _Library.Flags or {}
 end
 
-local function NewText(size, color)
-    local t = Drawing.new("Text")
-    t.Visible = false
-    t.Size    = size or 13
-    t.Center  = true
-    t.Outline = true
-    t.Color   = color or Color3.fromRGB(100, 220, 255)
-    return t
-end
-
-local function RemoveNpc(model)
+local function RemoveNpc(model, renderName)
     local e = _active[model]
     if not e then return end
-    RunService:UnbindFromRenderStep(e.renderName)
-    if e.nameText then e.nameText:Remove() end
-    if e.distText then e.distText:Remove() end
+    RunService:UnbindFromRenderStep(renderName or e.renderName)
+    if e.espText then e.espText:Remove() end
     if e.ancestryConn then e.ancestryConn:Disconnect() end
     _active[model] = nil
 end
 
 local function AddNpc(model)
     if _active[model] then return end
+    if not model:IsA("Model") then return end
     local primary = model.PrimaryPart
-        or model:FindFirstChild("HumanoidRootPart")
-        or model:FindFirstChildWhichIsA("BasePart")
     if not primary then return end
 
-    local color      = Color3.fromRGB(100, 220, 255)
-    local nameText   = NewText(13, color)
-    local distText   = NewText(11, Color3.fromRGB(200, 200, 200))
+    local flags    = GetFlags()
+    local color    = (flags["NPC Color"] and flags["NPC Color"].Color) or Color3.fromRGB(100, 220, 255)
+    local espText  = Drawing.new("Text")
+    espText.Visible = false
+    espText.Center  = true
+    espText.Outline = true
+    espText.Color   = color
+    espText.Size    = 14
+
     local renderName = "NpcESP_" .. model:GetDebugId()
 
     RunService:BindToRenderStep(renderName, Enum.RenderPriority.Camera.Value + 1, function()
-        local flags = GetFlags()
-        if not flags["NPC ESP"] or not model.Parent then
-            RemoveNpc(model)
+        local f = GetFlags()
+        if not f["NPC ESP"] or not model.Parent then
+            RemoveNpc(model, renderName)
             return
         end
 
         local localChar = Players.LocalPlayer.Character
         local localHRP  = localChar and localChar:FindFirstChild("HumanoidRootPart")
-        if not localHRP then
-            nameText.Visible = false
-            distText.Visible = false
-            return
-        end
+        if not localHRP then espText.Visible = false return end
 
         local dist    = (primary.Position - localHRP.Position).Magnitude
-        local maxDist = flags["NPC ESP Distance"] or 500
-        if dist > maxDist then
-            nameText.Visible = false
-            distText.Visible = false
-            return
-        end
+        local maxDist = f["NPC ESP Distance"] or 1000
 
         local screenPos, onScreen = Camera:WorldToViewportPoint(primary.Position)
-        if not onScreen then
-            nameText.Visible = false
-            distText.Visible = false
+
+        if dist > maxDist or not onScreen then
+            espText.Visible = false
             return
         end
 
-        local npcColor = (flags["NPC Color"] and flags["NPC Color"].Color) or color
-        local sx = math.round(screenPos.X)
-        local sy = math.round(screenPos.Y)
-
-        if flags["NPC Name"] then
-            nameText.Text     = model.Name
-            nameText.Size     = 13
-            nameText.Position = Vector2.new(sx, sy - 20)
-            nameText.Color    = npcColor
-            nameText.Visible  = true
-        else
-            nameText.Visible = false
-        end
-
-        if flags["NPC Distance"] then
-            local unit  = flags["NPC Distance Unit"] or "studs"
-            local label = unit == "m"
-                and string.format("[%.0f m]", dist)
-                or  string.format("[%.0f studs]", dist)
-            distText.Text     = label
-            distText.Position = Vector2.new(sx, sy + 6)
-            distText.Visible  = true
-        else
-            distText.Visible = false
-        end
+        local npcColor = (f["NPC Color"] and f["NPC Color"].Color) or Color3.fromRGB(100, 220, 255)
+        espText.Color   = npcColor
+        espText.Size    = f["NPC Font Size"] or 14
+        espText.Text    = string.format("[%s][%.1fm]", model.Name, dist)
+        espText.Position = Vector2.new(screenPos.X, screenPos.Y - 50)
+        espText.Visible  = true
     end)
 
     local ancestryConn = model.AncestryChanged:Connect(function(_, parent)
-        if not parent then RemoveNpc(model) end
+        if not parent then RemoveNpc(model, renderName) end
     end)
 
-    _active[model] = { nameText=nameText, distText=distText, renderName=renderName, ancestryConn=ancestryConn }
+    _active[model] = { espText=espText, renderName=renderName, ancestryConn=ancestryConn }
 end
 
 local _scanConn  = nil
@@ -114,7 +80,7 @@ local function ScanNpcs()
     local npcs = workspace:FindFirstChild("NPCs")
     if not npcs then return end
     for _, child in ipairs(npcs:GetChildren()) do
-        if child:IsA("Model") then AddNpc(child) end
+        if child:IsA("Model") and child.PrimaryPart then AddNpc(child) end
     end
 end
 
